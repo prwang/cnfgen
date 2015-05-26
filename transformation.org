@@ -1,0 +1,108 @@
+#+TITLE:     CNFgen
+#+AUTHOR:    Massimo Lauria
+#+EMAIL:     lauria@kth.se
+#+LANGUAGE:  en
+#+OPTIONS:   H:3 num:nil toc:nil \n:nil @:t ::t |:t ^:t -:t f:t *:t <:t
+#+OPTIONS:   TeX:t LaTeX:t skip:nil d:nil todo:t pri:nil tags:not-in-toc
+#+EXPORT_EXCLUDE_TAGS: noexport
+#+HTML_HEAD_EXTRA: <meta charset='utf-8'>
+#+HTML_HEAD_EXTRA: <meta http-equiv="X-UA-Compatible" content="chrome=1">
+#+HTML_HEAD_EXTRA: <meta name="description" content="CNFgen : Cool benchmarks for your SAT solver!">
+#+HTML_HEAD: <link rel="stylesheet" type="text/css" media="screen" href="stylesheets/stylesheet.css">
+#+HTML_HEAD: <style type="text/css"> .title  { height: 0; margin: 0;} </style>
+
+
+#+begin_html
+<!-- HEADER -->
+    <div id="header_wrap" class="outer">
+        <header class="inner">
+          <a id="forkme_banner" href="https://github.com/MassimoLauria/cnfgen">View on GitHub</a>
+
+          <h1 id="project_title">CNFgen</h1>
+          <h2 id="project_tagline">Cool benchmarks for your SAT solver!</h2>
+
+            <section id="downloads">
+              <a class="zip_download_link" href="https://github.com/MassimoLauria/cnfgen/zipball/master">Download this project as a .zip file</a>
+              <a class="tar_download_link" href="https://github.com/MassimoLauria/cnfgen/tarball/master">Download this project as a tar.gz file</a>
+            </section>
+        </header>
+    </div>
+#+end_html
+#+begin_html
+    <div id="main_content_wrap" class="outer">
+      <section id="main_content" class="inner">
+#+end_html
+
+Often we want to increase the hardness of formulas in a controlled way
+to study their proof complexity or how SAT solvers perform on them.
+
+* Background
+
+  Pick  a  formula F  on  variables  {xᵢ}.  We  can take  a  function
+  g:{0,1}ˡ→{0,1}  and  substitute each  variable  with  the value  of
+  function g on l independent copies of the variables. For example if
+  g is XOR and l=2 then the CNF
+
+  x ∧ (y v ¬z)
+
+  becomes
+
+  x₁⊕x₂ ∧ (y₁⊕y₂ v ¬z₁⊕z₂).
+
+  Each of the  two original clauses must be represented  in CNF form:
+  x₁⊕x₂ becomes (x₁ v x₂)∧( ¬x₁ v ¬x₂); and y₁⊕y₂ v ¬z₁⊕z₂ becomes
+
+  ( y₁ v  y₂  z₁ v ¬z₂)∧
+  (¬y₁ v ¬y₂  z₁ v ¬z₂)∧
+  ( y₁ v  y₂ ¬z₁ v  z₂)∧
+  (¬y₁ v ¬y₂ ¬z₁ v  z₂)
+
+
+* Usage
+
+  CNFgen  include two  tools with  formula transformation  capability:
+  =cnfgen= can  apply the transformation  after it generates  the CNF,
+  and directly outputs the DIMACS of the final formula,
+
+  : cnfgen --Transform <type> --Tarity <N> <formula_type> <formula_param>
+
+  while =cnftransform=  applies transformations to any  DIMACS formula
+  in input, using the command line
+
+  : cnftransform --Transform <type> --Tarity <N> [-i <inputfile>] [-o <outputfile>]
+  
+  For example,  if we want  to substitute each  variables of a  CNF in
+  DIMACS  format,  given in  standard  input,  with  a  XOR of  3  new
+  variables and output the formula on standard output it is sufficient
+  to type
+
+  : cnftransform --Transform xor --Tarity 2
+   
+  For a list of all implemented transformations you can type either 
+   
+  : cnfgen --help-transform
+
+  or
+   
+  : cnftransform --help-transform
+
+
+#+begin_html
+    </section></div>
+#+end_html
+#+begin_html
+    <!-- FOOTER  -->
+    <div id="footer_wrap" class="outer">
+      <footer class="inner">
+        <p class="copyright">CNFgen maintained by <a href="https://github.com/MassimoLauria">MassimoLauria</a></p>
+        <p>Published with <a href="https://pages.github.com">GitHub Pages</a></p>
+      </footer>
+    </div>
+#+end_html
+
+# Local variables:
+# org-html-preamble: nil
+# org-html-postamble: nil
+# org-html-toplevel-hlevel: 3
+# org-html-head-include-default-style: nil
+# End:

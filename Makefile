@@ -2,7 +2,7 @@
 
 ########### CONFIGURATION ########################
 PROJECT="cnfgen"
-SOURCES=index.org
+SOURCES=index.org transformation.org background.org
 EMACS=emacs
 
 ifeq ($(shell uname -s),Darwin)

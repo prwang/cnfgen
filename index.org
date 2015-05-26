@@ -3,13 +3,14 @@
 #+EMAIL:     lauria@kth.se
 #+LANGUAGE:  en
 #+OPTIONS:   H:3 num:nil toc:nil \n:nil @:t ::t |:t ^:t -:t f:t *:t <:t
-#+OPTIONS:   TeX:nil LaTeX:nil skip:nil d:nil todo:t pri:nil tags:not-in-toc
+#+OPTIONS:   TeX:t LaTeX:t skip:nil d:nil todo:t pri:nil tags:not-in-toc
 #+EXPORT_EXCLUDE_TAGS: noexport
 #+HTML_HEAD_EXTRA: <meta charset='utf-8'>
 #+HTML_HEAD_EXTRA: <meta http-equiv="X-UA-Compatible" content="chrome=1">
 #+HTML_HEAD_EXTRA: <meta name="description" content="CNFgen : Cool benchmarks for your SAT solver!">
 #+HTML_HEAD: <link rel="stylesheet" type="text/css" media="screen" href="stylesheets/stylesheet.css">
 #+HTML_HEAD: <style type="text/css"> .title  { height: 0; margin: 0;} </style>
+
 
 #+begin_html
 <!-- HEADER -->
@@ -32,17 +33,187 @@
       <section id="main_content" class="inner">
 #+end_html
 
+CNFgen is a tool that  produces the combinatorial benchmarks in DIMACS
+format for  SAT solvers,  coming from  edge-cutting research  in Proof
+Complexity  (e.g.   pigeonhole  principle,  ordering   principle,  …).
+These  formulas  are particularly  suitable  to  test the  limits  and
+extremal behavior of solving heuristics.
 
-There are  so many definitions of  expansion in literature that  it is
-quite easy  to mix them  up and think about  one when we  are actually
-using another.  We mostly focus on the expansion of simple graphs, but
-I may also focus on the expansion of matrices.
+* Features
 
-* Graph expansion
+  - =cnfgen= generator for [[file:background.org][CNF formula]] benchmarks,
+  - the python library =cnfformula= for more flexible CNF generation and manipulation,
+  - behind-the-scene integration with many SAT solvers,
+  - output in DIMACS and LaTeX formats,
+  - formula [[file:transformation.org][post-processing]].
 
-  Expander   graphs  are   useful   tools   in  theoretical   computer
-  science.  But each  result may  need different  types of  expansion,
-  depending on what are the technical steps involved in the proof.
+* Installation
+  
+  You can install CNFgen from  [[http://pypi.python.org][Python Package Index]], together with all
+  its dependencies, typing either
+
+  : easy_install [--user] cnfgen
+
+  or
+
+  : pip install  [--user] cnfgen
+
+  Otherwise it  is possible to install from source using
+   
+  : python setup.py install [--user]
+
+  In all  cases the =--user= option  allows to install the  package in
+  the user home directory. In this case please check that the location
+  where the command line utilities are installed is in your =PATH=.
+   
+* Quickstart 
+
+  To produce a DIMACS file type
+
+  : cnfgen [-o <output_file>] <formula_type> <formula_parameters>
+
+  where each  choice of  =<formula_type>= has  its own  parameters and
+  options.  For  example here's  how  to  get a  pigeonhole  principle
+  formula from 10 pigeons to 7 holes printed to standard output:
+
+  : cnfgen php 10 7 
+
+  We implement  several families of  formula in =cnfgen= tool.  Now we
+  briefly  describe  some  of  them, with  the  principal  parameters.
+  For  a  full  list  of implemented  formula  families  type  =cnfgen
+  --help=. To get specific information on one each family use
+
+  : cnfgen <formula_type> --help
+
+
+** Pigeonhole Principle
+
+   The formula  claims that  it is  possible to assign $m$ pigeons  to $n$
+   holes so that
+
+   - each pigeon gets at least a hole;
+   - no to pigeons get the same hole.
+
+   : cnfgen php <m> <n>
+
+   This formula is clearly unsatisfiable in $m>n$. In literature there
+   are other variants of this formula:
+
+   - in *functional* PHP every pigeon is assigned to exactly one hole;
+   - in *onto* PHP every hole must contain at least a pigeon;
+   - *matching* PHP has both *functional* and *onto* clauses.
+
+   You can  add functional  and onto clauses  using the  command line
+   options.
+
+   : cnfgen php [--functional] [--onto] <P> <N>
+
+** Tseitin  formulas
+
+   Tseitin  formula  represent a  particular  linear  system based  on
+   graphs. Start  from a  graph G  such that  each vertex  is labelled
+   either 0 or 1. The formula claim that  you can put labels 0 or 1 on
+   the edges of G  so that the label of each vertex v  is equal to the
+   sum of the labels on the edges incident to v (module 2).
+
+   : cnfgen tseitin –charge <type> -i <input_graph>
+
+   The initial  charge of  the vertices is  either =first=  (only the
+   first  vertex is  labeled 1) or  one  of =random=,  =randomodd=,
+   =randomeven=.
+
+   While in general the graph can be provided in input, there are some
+   immediately usable.
+   
+   : cnfgen tseitin --charge random --grid 10 10
+
+   Produces  a =tseitin=  formula over  a 10  by 10  grid graph,  with
+   labeling of the vertices uniformily random.
+
+** Ordering principle
+
+   The  formula claims  that  there is  partial order  over  a set  of
+   N elements, such  that every element has at  least one predecessor.
+   For example the  DIMACS formula for the ordering  principle over 30
+   elements is generated by
+
+   : cnfgen op 30
+   
+   The graph ordering  principle is a variant  of ordering principle:
+   given a graph G  of n vertices, the formula claim  that there is a
+   partial (or total) order on V(G),  such that every vertex there is
+   another one which is
+   
+   - a predecessor in the order;
+   - a neighbor in the graph.
+
+   : cnfgen gop -i <input_graph>
+   
+   The  vanilla ordering  principle equivalent  to the  graph ordering
+   principle if  the underlying graph is  the complete one, as  in the
+   example
+
+   : cnfgen gop --complete 30
+   
+** Pebbling formula
+
+   A directed acyclic graph G has some vertices with no incoming arcs
+   (*sources*) and  vertices with no  outgoing arcs (*sinks*).  For a
+   given directed acyclic graph G,  the pebbling formula for G claims
+   that:
+   
+   - there is a pebble on every source;
+   - if all predecessors  of vertex v are pebbled, then  v is pebbled
+     too;
+   - the sinks are not pebbled.
+
+   For  example we  can generate  the  pebbling formula  for a  rooted
+   binary tree of height 10 with
+   
+   : cnfgen peb --tree 10
+
+   and we can do the same for a graph in input using 
+
+   : cnfgen peb -i <input_dag>
+
+** K-clique formula
+
+   If given a graph G, the formula  claims that there is no clique of
+   size at least k in the graph G. 
+
+   : cnfgen kclique <k> -i <input_graph> 
+
+   There is the additional option  =--plantclique= that plant a random
+   clique  in the  graph. In  this  way it  is possible  to study  the
+   behavior of SAT solver on  the /hidden clique problem/. For example
+   the formula generated by
+
+   : cnfgen kclique 10 --gnp 200 0.5 --plantclique 15
+   
+   claims that  there is a clique  of size 10 in  a random Erdös-Renyi
+   graph with 200 vertices where a clique of size 15 has been planted.
+
+** Ramsey number formula
+  
+   The simplest  version of the  famous /Ramsey theorem/ says  that for
+   every s and  k there is a  number r(s,k) such that  every graph of
+   r(s,k)  vertices has  either an  independent set  of size  s or  a
+   clique of size k. Command line
+
+   : cnfgen ram <s> <k> <N>
+
+   produces  a formula  that claims  that r(s,k)>N.
+
+
+* Acknowledgments
+
+  The CNFgen project is  by Massimo Lauria ([[mailto:lauria.massimo@gmail.com][lauria.massimo@gmail.com]]),
+  with helps and contributions by Marc Vinyals, Mladen Mikša and [[http://www.csc.kth.se/~jakobn/][Jakob
+  Nordström]]  from  KTH Royal  Institute  of  Technology in  Stockholm,
+  Sweden. Massimo Lauria is maintaining  and developing the tool while
+  funded by the  European Research Council under  the European Union's
+  Seventh  Framework Programme  (FP7/2007--2013)  ERC grant  agreement
+  no. 279611.
 
 
 #+begin_html

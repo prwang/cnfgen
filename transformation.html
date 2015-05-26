@@ -1,0 +1,187 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+<title>CNFgen</title>
+<!-- 2015-05-26 Tue 15:35 -->
+<meta  http-equiv="Content-Type" content="text/html;charset=utf-8" />
+<meta  name="generator" content="Org-mode" />
+<meta  name="author" content="Massimo Lauria" />
+<link rel="stylesheet" type="text/css" media="screen" href="stylesheets/stylesheet.css">
+<style type="text/css"> .title  { height: 0; margin: 0;} </style>
+<meta charset='utf-8'>
+<meta http-equiv="X-UA-Compatible" content="chrome=1">
+<meta name="description" content="CNFgen : Cool benchmarks for your SAT solver!">
+<script type="text/javascript">
+/*
+@licstart  The following is the entire license notice for the
+JavaScript code in this tag.
+
+Copyright (C) 2012-2013 Free Software Foundation, Inc.
+
+The JavaScript code in this tag is free software: you can
+redistribute it and/or modify it under the terms of the GNU
+General Public License (GNU GPL) as published by the Free Software
+Foundation, either version 3 of the License, or (at your option)
+any later version.  The code is distributed WITHOUT ANY WARRANTY;
+without even the implied warranty of MERCHANTABILITY or FITNESS
+FOR A PARTICULAR PURPOSE.  See the GNU GPL for more details.
+
+As additional permission under GNU GPL version 3 section 7, you
+may distribute non-source (e.g., minimized or compacted) forms of
+that code without the copy of the GNU GPL normally required by
+section 4, provided you include this license notice and a URL
+through which recipients can access the Corresponding Source.
+
+
+@licend  The above is the entire license notice
+for the JavaScript code in this tag.
+*/
+<!--/*--><![CDATA[/*><!--*/
+ function CodeHighlightOn(elem, id)
+ {
+   var target = document.getElementById(id);
+   if(null != target) {
+     elem.cacheClassElem = elem.className;
+     elem.cacheClassTarget = target.className;
+     target.className = "code-highlighted";
+     elem.className   = "code-highlighted";
+   }
+ }
+ function CodeHighlightOff(elem, id)
+ {
+   var target = document.getElementById(id);
+   if(elem.cacheClassElem)
+     elem.className = elem.cacheClassElem;
+   if(elem.cacheClassTarget)
+     target.className = elem.cacheClassTarget;
+ }
+/*]]>*///-->
+</script>
+</head>
+<body>
+<div id="content">
+<h1 class="title">CNFgen</h1>
+<!-- HEADER -->
+    <div id="header_wrap" class="outer">
+        <header class="inner">
+          <a id="forkme_banner" href="https://github.com/MassimoLauria/cnfgen">View on GitHub</a>
+
+          <h1 id="project_title">CNFgen</h1>
+          <h2 id="project_tagline">Cool benchmarks for your SAT solver!</h2>
+
+            <section id="downloads">
+              <a class="zip_download_link" href="https://github.com/MassimoLauria/cnfgen/zipball/master">Download this project as a .zip file</a>
+              <a class="tar_download_link" href="https://github.com/MassimoLauria/cnfgen/tarball/master">Download this project as a tar.gz file</a>
+            </section>
+        </header>
+    </div>
+<div id="main_content_wrap" class="outer">
+  <section id="main_content" class="inner">
+
+<p>
+Often we want to increase the hardness of formulas in a controlled way
+to study their proof complexity or how SAT solvers perform on them.
+</p>
+
+<div id="outline-container-sec-1" class="outline-3">
+<h3 id="sec-1">Background</h3>
+<div class="outline-text-3" id="text-1">
+<p>
+Pick  a  formula F  on  variables  {xᵢ}.  We  can take  a  function
+g:{0,1}ˡ→{0,1}  and  substitute each  variable  with  the value  of
+function g on l independent copies of the variables. For example if
+g is XOR and l=2 then the CNF
+</p>
+
+<p>
+x ∧ (y v ¬z)
+</p>
+
+<p>
+becomes
+</p>
+
+<p>
+x₁⊕x₂ ∧ (y₁⊕y₂ v ¬z₁⊕z₂).
+</p>
+
+<p>
+Each of the  two original clauses must be represented  in CNF form:
+x₁⊕x₂ becomes (x₁ v x₂)∧( ¬x₁ v ¬x₂); and y₁⊕y₂ v ¬z₁⊕z₂ becomes
+</p>
+
+<p>
+( y₁ v  y₂  z₁ v ¬z₂)∧
+(¬y₁ v ¬y₂  z₁ v ¬z₂)∧
+( y₁ v  y₂ ¬z₁ v  z₂)∧
+(¬y₁ v ¬y₂ ¬z₁ v  z₂)
+</p>
+</div>
+</div>
+
+
+<div id="outline-container-sec-2" class="outline-3">
+<h3 id="sec-2">Usage</h3>
+<div class="outline-text-3" id="text-2">
+<p>
+CNFgen  include two  tools with  formula transformation  capability:
+<code>cnfgen</code> can  apply the transformation  after it generates  the CNF,
+and directly outputs the DIMACS of the final formula,
+</p>
+
+<pre class="example">
+cnfgen --Transform &lt;type&gt; --Tarity &lt;N&gt; &lt;formula_type&gt; &lt;formula_param&gt;
+</pre>
+
+<p>
+while <code>cnftransform</code>  applies transformations to any  DIMACS formula
+in input, using the command line
+</p>
+
+<pre class="example">
+cnftransform --Transform &lt;type&gt; --Tarity &lt;N&gt; [-i &lt;inputfile&gt;] [-o &lt;outputfile&gt;]
+</pre>
+
+<p>
+For example,  if we want  to substitute each  variables of a  CNF in
+DIMACS  format,  given in  standard  input,  with  a  XOR of  3  new
+variables and output the formula on standard output it is sufficient
+to type
+</p>
+
+<pre class="example">
+cnftransform --Transform xor --Tarity 2
+</pre>
+
+<p>
+For a list of all implemented transformations you can type either 
+</p>
+
+<pre class="example">
+cnfgen --help-transform
+</pre>
+
+<p>
+or
+</p>
+
+<pre class="example">
+cnftransform --help-transform
+</pre>
+
+
+</section></div>
+<!-- FOOTER  -->
+<div id="footer_wrap" class="outer">
+  <footer class="inner">
+    <p class="copyright">CNFgen maintained by <a href="https://github.com/MassimoLauria">MassimoLauria</a></p>
+    <p>Published with <a href="https://pages.github.com">GitHub Pages</a></p>
+  </footer>
+</div>
+</div>
+</div>
+</div>
+</body>
+</html>
