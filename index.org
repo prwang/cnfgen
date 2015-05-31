@@ -106,7 +106,7 @@ extremal behavior of solving heuristics.
    You can  add functional  and onto clauses  using the  command line
    options.
 
-   : cnfgen php [--functional] [--onto] <P> <N>
+   : cnfgen php [--functional] [--onto] <m> <n>
 
 ** Tseitin  formulas
 
