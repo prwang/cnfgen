@@ -1,4 +1,4 @@
-#+TITLE:     CNFgen
+#+TITLE:     
 #+AUTHOR:    Massimo Lauria
 #+EMAIL:     lauria@kth.se
 #+LANGUAGE:  en
@@ -18,7 +18,7 @@
         <header class="inner">
           <a id="forkme_banner" href="https://github.com/MassimoLauria/cnfgen">View on GitHub</a>
 
-          <h1 id="project_title">CNFgen</h1>
+          <h1 id="project_title"><a id="project_title" href="https://massimolauria.github.io/cnfgen">CNFgen</a></h1>
           <h2 id="project_tagline">Cool benchmarks for your SAT solver!</h2>
 
             <section id="downloads">
@@ -41,14 +41,14 @@
   Expressions of the form x  and ¬x are called \literals/, and
   a /clause/ is a disjunction
 
-  l₁ v l₂ v … v lₖ
+  l₁ v l₂ v … 
 
   where each lᵢ is a literal. A clause evaluates to one if and only
   if *at  least* one of the  literals evaluates to  one. Otherwise the
   clause evaluates to zero.
   A CNF is a conjunction of clauses
 
-  C₁ ∧ C₂ ∧ … ∧ Cₘ
+  C₁ ∧ C₂ ∧ … 
 
   and the CNF evaluates to one if *all* clauses evaluates to one.
 
@@ -78,7 +78,7 @@
   variable indexed by t. A negative number t is the negated literal on
   the variable indexed by -t.
 
-  For example if the  formula is defined on n variables  x₁, x₂, …, xₙ
+  For example if the formula is defined  on n variables x₁, x₂, x₃, …,
   then the line =3 -1 5 6 -4 0=  encodes the clause x3 v ¬x₁ v x₅ v x₆
   v ¬x₄.
 

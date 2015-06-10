@@ -2,11 +2,12 @@
 
 ########### CONFIGURATION ########################
 PROJECT="cnfgen"
-SOURCES=index.org transformation.org background.org
+SOURCES=index.org transformation.org background.org kthformat.org
 EMACS=emacs
 
 ifeq ($(shell uname -s),Darwin)
 BROWSE=open
+EMACS=/Applications/Emacs.app/Contents/MacOS/Emacs
 else
 BROWSE=xdg-open
 endif
@@ -21,7 +22,7 @@ all: ${TARGET}
 clean:
 	@-rm -f  ${TARGET}
 
-view:
+view: ${TARGET}
 	@${BROWSE} index.html
 
 %.html: %.org 
