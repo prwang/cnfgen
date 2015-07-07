@@ -161,8 +161,8 @@ graph {
   side and columns to vertices on the right side.
 
   The  file  consists  on  two   numbers  =r=  and  =c=  separated  by
-  whitespace,  followed by  a  list of  whitespace  separated list  of
-  $r\times c$ zeros and ones. Here's a well formatted example.
+  whitespace, followed by a whitespace separated sequence of zeros and
+  onces of length $r\times c$. Here's a well formatted example.
 
 #+BEGIN_SRC 
 5 6
