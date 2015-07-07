@@ -34,10 +34,12 @@
 #+end_html
 
 
-  Some  of  the  formula  recipes  in  =cnfgen=  have  a  graph  based
-  structure. It  is possible either  to read  graphs from files  or to
-  generate them  internally. The =cnfgen=  tool accepts graphs  in the
-  following  file formats. 
+  Some formula recipes in =cnfgen= have a graph based structure, which
+  can  be either  a  *simple* undirected  graph,  a *biparite*  graph,
+  a *directed*  graph or  a *dag*  (a directed  acyclic graph).  It is
+  possible  either to  read  graphs  from files  or  to generate  them
+  internally.  The  =cnfgen= tool  accepts  and  saves graphs  in  the
+  following file formats.
 
   + GML format ([[http://www.infosun.fim.uni-passau.de/Graphlet/GML/gml-tr.html][specification]])
   + DOT format if ``pygraphviz`` is installed ([[http://www.graphviz.org/content/dot-language][specification]])
@@ -45,9 +47,8 @@
   + KTH format ([[kthformat][specification]])
   + Matrix format ([[matrix][specification]])
 
-  Building a  formula may  require a  specific type  of graphs  and in
-  =cnfgen=  we  consider four  of  them.  Some  file formats  are  not
-  suitable to represent some types of graphs.
+  Different file  formats are  suitable for  specific graph  types, as
+  shown in this table.
 
   |-------------+-------------------------+-------+-------+-------+--------+--------|
   | Graph type  | Description             | GML   | DOT   | KTH   | DIMACS | Matrix |
@@ -61,6 +62,12 @@
   | =bipartite= | bipartite graphs        | *Yes* | *Yes* | *No*  | *No*   | *Yes*  |
   |-------------+-------------------------+-------+-------+-------+--------+--------|
 
+  If the file ends with one  of the extensions =.kth=, =.gml=, =.dot=,
+  =.matrix=, =.dimacs= then  the program assumes that the  file is the
+  corresponding format. It is possible to specify the format using the
+  =-gf= option in the command  line, which is particularly useful when
+  the graph  is read from  standard input  or written of  the standard
+  output, or when the file extension does not match its file format.
 
 
 ** GML and DOT format — bipartite graphs representation
@@ -78,7 +85,7 @@
   of Technology.
   
   The file  can start with some  comments line, each of  them starting
-  with character =c=. The next non  black line must contain the number
+  with character =c=. The next  non-blank line must contain the number
   n of vertices in the graph. Then  there must be $n$ non black lines,
   one for each vertex 1 ≤ i ≤ n. The lines have the format:
 
@@ -149,7 +156,48 @@ graph {
 
 * Matrix format<<matrix>>
 
-  Blah blah the matrix format
+  The matrix format  is suitable to represent the  adjacency matrix of
+  a bipartite  graph, where  rows correspond to  vertices on  the left
+  side and columns to vertices on the right side.
+
+  The  file  consists  on  two   numbers  =r=  and  =c=  separated  by
+  whitespace,  followed by  a  list of  whitespace  separated list  of
+  $r\times c$ zeros and ones. Here's a well formatted example.
+
+#+BEGIN_SRC 
+5 6
+0 1 1 1 0 0
+1 1 0 1 0 0
+0 0 1 1 0 1
+0 0 1 0 1 1
+1 0 0 0 1 1
+#+END_SRC
+
+  which represents the bipartite graph
+
+#+BEGIN_SRC dot :cmd neato :file images/matrixformatEG.png :exports results
+  graph {
+   l1 [label=1,pos="0,5!"]
+   l2 [label=2,pos="0,4!"]
+   l3 [label=3,pos="0,3!"]
+   l4 [label=4,pos="0,2!"]
+   l5 [label=5,pos="0,1!"]
+   r1 [label=1,pos="2,5.5!"]
+   r2 [label=2,pos="2,4.5!"]
+   r3 [label=3,pos="2,3.5!"]
+   r4 [label=4,pos="2,2.5!"]
+   r5 [label=5,pos="2,1.5!"]
+   r6 [label=6,pos="2,0.5!"]
+   l1 -- {r2 r3 r4}
+   l2 -- {r1 r2 r4}
+   l3 -- {r3 r4 r6}
+   l4 -- {r3 r5 r6}
+   l5 -- {r1 r5 r6}
+  }
+#+END_SRC
+
+#+RESULTS:
+[[file:images/matrixformatEG.png]]
 
 
 #+begin_html
