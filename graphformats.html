@@ -4,7 +4,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
 <title></title>
-<!-- 2015-07-07 Tue 11:05 -->
+<!-- 2015-07-07 Mar 23:21 -->
 <meta  http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta  name="generator" content="Org-mode" />
 <meta  name="author" content="Massimo Lauria" />
@@ -139,7 +139,7 @@ following file formats.
 </li>
 <li>DIMACS edge format (<a href="http://prolland.free.fr/works/research/dsat/dimacs.html">specification</a>)
 </li>
-<li>KTH format (<a href="#kthformat">specification</a>)
+<li>Adjacency list format (<a href="#adjformat">specification</a>)
 </li>
 <li>Matrix format (<a href="#matrix">specification</a>)
 </li>
@@ -174,7 +174,7 @@ shown in this table.
 <th scope="col" class="left">Description</th>
 <th scope="col" class="left">GML</th>
 <th scope="col" class="left">DOT</th>
-<th scope="col" class="left">KTH</th>
+<th scope="col" class="left">Adj. lists</th>
 <th scope="col" class="left">DIMACS</th>
 <th scope="col" class="left">Matrix</th>
 </tr>
@@ -226,12 +226,13 @@ shown in this table.
 </table>
 
 <p>
-If the file ends with one  of the extensions <code>.kth</code>, <code>.gml</code>, <code>.dot</code>,
-<code>.matrix</code>, <code>.dimacs</code> then  the program assumes that the  file is the
-corresponding format. It is possible to specify the format using the
-<code>-gf</code> option in the command  line, which is particularly useful when
-the graph  is read from  standard input  or written of  the standard
-output, or when the file extension does not match its file format.
+If  the file  ends with  one of  the extensions  <code>.adjlist</code>, <code>.gml</code>,
+<code>.dot</code>, <code>.matrix</code>, <code>.dimacs</code> then the  program assumes that the file
+is the  corresponding format. It  is possible to specify  the format
+using the  <code>-gf</code> option in  the command line, which  is particularly
+useful when the graph is read  from standard input or written of the
+standard  output, or  when the  file  extension does  not match  its
+file format.
 </p>
 
 
@@ -249,12 +250,12 @@ This is the same convention used by graph library <a href="https://networkx.gith
 
 
 <div id="outline-container-sec-1" class="outline-3">
-<h3 id="sec-1">KTH format<a id="kthformat" name="kthformat"></a></h3>
+<h3 id="sec-1">Adjacency list format<a id="adjformat" name="adjformat"></a></h3>
 <div class="outline-text-3" id="text-1">
 <p>
-The KTH graph format is a  very simple format used internally at the
-Proof   Complexity   <a href="http://www.csc.kth.se/~jakobn/project-proofcplx/">research   group</a>   at   KTH   Royal   Institute
-of Technology.
+The  adjacency  list graph  format  is  a  very simple  format  used
+internally  at the  Proof  Complexity <a href="http://www.csc.kth.se/~jakobn/project-proofcplx/">research  group</a>  at KTH  Royal
+Institute of Technology.
 </p>
 
 <p>
@@ -276,7 +277,7 @@ of all vertices which have an edge to vertex <code>i</code>.
 
 
 <div id="outline-container-sec-1-1" class="outline-4">
-<h4 id="sec-1-1">KTH format — about DAGs representation</h4>
+<h4 id="sec-1-1">Adjacency list format — about DAGs representation</h4>
 <div class="outline-text-4" id="text-1-1">
 <p>
 When the vertices are enumerated  in topological order from sources
@@ -289,7 +290,7 @@ is raised.
 </div>
 
 <div id="outline-container-sec-1-2" class="outline-4">
-<h4 id="sec-1-2">KTH format — directed vs undirected graphs</h4>
+<h4 id="sec-1-2">Adjacency list format — directed vs undirected graphs</h4>
 <div class="outline-text-4" id="text-1-2">
 <p>
 The  format  can represent  both  directed  and undirected  graphs,
@@ -321,7 +322,7 @@ which represents the directed acyclic graph
 
 
 <div class="figure">
-<p><img src="images/kthformatDAG.png" alt="kthformatDAG.png" />
+<p><img src="images/adjformatDAG.png" alt="adjformatDAG.png" />
 </p>
 </div>
 
@@ -331,7 +332,7 @@ and the simple undirected graph
 
 
 <div class="figure">
-<p><img src="images/kthformatS.png" alt="kthformatS.png" />
+<p><img src="images/adjformatS.png" alt="adjformatS.png" />
 </p>
 </div>
 </div>

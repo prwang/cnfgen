@@ -44,30 +44,31 @@
   + GML format ([[http://www.infosun.fim.uni-passau.de/Graphlet/GML/gml-tr.html][specification]])
   + DOT format if ``pygraphviz`` is installed ([[http://www.graphviz.org/content/dot-language][specification]])
   + DIMACS edge format ([[http://prolland.free.fr/works/research/dsat/dimacs.html][specification]])
-  + KTH format ([[kthformat][specification]])
+  + Adjacency list format ([[adjformat][specification]])
   + Matrix format ([[matrix][specification]])
 
   Different file  formats are  suitable for  specific graph  types, as
   shown in this table.
 
-  |-------------+-------------------------+-------+-------+-------+--------+--------|
-  | Graph type  | Description             | GML   | DOT   | KTH   | DIMACS | Matrix |
-  |-------------+-------------------------+-------+-------+-------+--------+--------|
-  | =simple=    | simple undirected graph | *Yes* | *Yes* | *Yes* | *Yes*  | *No*   |
-  |-------------+-------------------------+-------+-------+-------+--------+--------|
-  | =digraph=   | directed graph          | *Yes* | *Yes* | *Yes* | *Yes*  | *No*   |
-  |-------------+-------------------------+-------+-------+-------+--------+--------|
-  | =dag=       | directed acyclic graph  | *Yes* | *Yes* | *Yes* | *No*   | *No*   |
-  |-------------+-------------------------+-------+-------+-------+--------+--------|
-  | =bipartite= | bipartite graphs        | *Yes* | *Yes* | *No*  | *No*   | *Yes*  |
-  |-------------+-------------------------+-------+-------+-------+--------+--------|
+  |-------------+-------------------------+-------+-------+------------+--------+--------|
+  | Graph type  | Description             | GML   | DOT   | Adj. lists | DIMACS | Matrix |
+  |-------------+-------------------------+-------+-------+------------+--------+--------|
+  | =simple=    | simple undirected graph | *Yes* | *Yes* | *Yes*      | *Yes*  | *No*   |
+  |-------------+-------------------------+-------+-------+------------+--------+--------|
+  | =digraph=   | directed graph          | *Yes* | *Yes* | *Yes*      | *Yes*  | *No*   |
+  |-------------+-------------------------+-------+-------+------------+--------+--------|
+  | =dag=       | directed acyclic graph  | *Yes* | *Yes* | *Yes*      | *No*   | *No*   |
+  |-------------+-------------------------+-------+-------+------------+--------+--------|
+  | =bipartite= | bipartite graphs        | *Yes* | *Yes* | *No*       | *No*   | *Yes*  |
+  |-------------+-------------------------+-------+-------+------------+--------+--------|
 
-  If the file ends with one  of the extensions =.kth=, =.gml=, =.dot=,
-  =.matrix=, =.dimacs= then  the program assumes that the  file is the
-  corresponding format. It is possible to specify the format using the
-  =-gf= option in the command  line, which is particularly useful when
-  the graph  is read from  standard input  or written of  the standard
-  output, or when the file extension does not match its file format.
+  If  the file  ends with  one of  the extensions  =.adjlist=, =.gml=,
+  =.dot=, =.matrix=, =.dimacs= then the  program assumes that the file
+  is the  corresponding format. It  is possible to specify  the format
+  using the  =-gf= option in  the command line, which  is particularly
+  useful when the graph is read  from standard input or written of the
+  standard  output, or  when the  file  extension does  not match  its
+  file format.
 
 
 ** GML and DOT format — bipartite graphs representation
@@ -78,11 +79,11 @@
    This is the same convention used by graph library [[https://networkx.github.io/][NetworkX]].
 
 
-* KTH format<<kthformat>>
+* Adjacency list format<<adjformat>>
 
-  The KTH graph format is a  very simple format used internally at the
-  Proof   Complexity   [[http://www.csc.kth.se/~jakobn/project-proofcplx/][research   group]]   at   KTH   Royal   Institute
-  of Technology.
+  The  adjacency  list graph  format  is  a  very simple  format  used
+  internally  at the  Proof  Complexity [[http://www.csc.kth.se/~jakobn/project-proofcplx/][research  group]]  at KTH  Royal
+  Institute of Technology.
   
   The file  can start with some  comments line, each of  them starting
   with character =c=. The next  non-blank line must contain the number
@@ -95,7 +96,7 @@
   of all vertices which have an edge to vertex =i=.
 
 
-** KTH format — about DAGs representation
+** Adjacency list format — about DAGs representation
 
    When the vertices are enumerated  in topological order from sources
    to  sinks,  most formula  constructions  will  respect this  order.
@@ -103,7 +104,7 @@
    If such order  does not exists (i.e. the graph  is cyclic) an error
    is raised.
 
-** KTH format — directed vs undirected graphs
+** Adjacency list format — directed vs undirected graphs
 
    The  format  can represent  both  directed  and undirected  graphs,
    depending on which type the generator expects. If interpreted as an
@@ -125,7 +126,7 @@
     
    which represents the directed acyclic graph
 
-#+BEGIN_SRC dot :file images/kthformatDAG.png :exports results
+#+BEGIN_SRC dot :file images/adjformatDAG.png :exports results
 digraph {
  1 -> 3;
  3 -> 4;
@@ -136,11 +137,11 @@ digraph {
 #+END_SRC
 
 #+RESULTS:
-[[file:images/kthformatDAG.png]]
+[[file:images/adjformatDAG.png]]
 
    and the simple undirected graph 
 
-#+BEGIN_SRC dot :file images/kthformatS.png :exports results
+#+BEGIN_SRC dot :file images/adjformatS.png :exports results
 graph {
  1 -- 3;
  3 -- 4;
@@ -151,7 +152,7 @@ graph {
 #+END_SRC
 
 #+RESULTS:
-[[file:images/kthformatS.png]]
+[[file:images/adjformatS.png]]
 
 
 * Matrix format<<matrix>>

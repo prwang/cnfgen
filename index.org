@@ -225,7 +225,7 @@ problems well known to be challenging for certain SAT solvers.
 
     Produce a CNF that claims that a graph =<G>= has no nontrivial automorphism.
 
-    : cnfgen gauto <G>
+    : cnfgen gauto -i <G>
 
 *** Ramsey number formula<<ram>>
    
