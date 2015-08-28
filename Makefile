@@ -23,6 +23,7 @@ version:
 	@$(EMACS) -Q -batch -l setup.el -f version-report >/dev/null
 
 clean:
+	@-rm -rf ltxpng/
 	@-rm -f  ${TARGET}
 
 view: ${TARGET}
