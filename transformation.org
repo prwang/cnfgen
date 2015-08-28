@@ -64,28 +64,6 @@ to study their proof complexity or how SAT solvers perform on them.
    
   : cnftransform --help-transform
 
-
-
-#+begin_html
-    </section></div>
-#+end_html
-#+begin_html
-    <!-- FOOTER  -->
-    <div id="footer_wrap" class="outer">
-      <footer class="inner">
-        <p class="copyright">CNFgen maintained by <a href="https://github.com/MassimoLauria">MassimoLauria</a></p>
-        <p>Published with <a href="https://pages.github.com">GitHub Pages</a></p>
-      </footer>
-    </div>
-#+end_html
-
-# Local variables:
-# org-html-preamble: nil
-# org-html-postamble: nil
-# org-html-toplevel-hlevel: 3
-# org-html-head-include-default-style: nil
-# End:
-
 * Available transformations
 
   The   =cnfgen=  and   =cnftransform=   tools   expose  the   formula
@@ -184,3 +162,25 @@ to study their proof complexity or how SAT solvers perform on them.
 
   Some of  the transformations can be  a little bit more  complex than
   that, but the XOR is a good example of how to make a formula harder.
+
+
+#+begin_html
+    </section></div>
+#+end_html
+#+begin_html
+    <!-- FOOTER  -->
+    <div id="footer_wrap" class="outer">
+      <footer class="inner">
+        <p class="copyright">CNFgen maintained by <a href="https://github.com/MassimoLauria">MassimoLauria</a></p>
+        <p>Published with <a href="https://pages.github.com">GitHub Pages</a></p>
+      </footer>
+    </div>
+#+end_html
+
+# Local variables:
+# org-html-preamble: nil
+# org-html-postamble: nil
+# org-html-toplevel-hlevel: 3
+# org-html-head-include-default-style: nil
+# End:
+
