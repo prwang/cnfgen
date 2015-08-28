@@ -3,7 +3,7 @@
 ########### CONFIGURATION ########################
 PROJECT="cnfgen"
 SOURCES=index.org transformation.org background.org graphformats.org
-EMACS=/usr/bin/emacs
+EMACS=emacs
 
 ifeq ($(shell uname -s),Darwin)
 BROWSE=open
