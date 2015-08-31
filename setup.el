@@ -20,25 +20,26 @@
  org-html-toplevel-hlevel 3        ; Level 1 headings in ORG file become <H3> in HTML export.
  org-html-head-include-default-style nil) ; No default CSS style
 
-
-
 ;; Compatibility with older Org-mode
 (setq
- org-export-html-auto-preamble org-html-preamble
- org-export-html-auto-postamble org-html-postamble)
+ org-export-html-preamble  nil
+ org-export-html-postamble nil
+ org-export-html-auto-preamble  nil
+ org-export-html-auto-postamble nil)
 
+(setq stylesheet-p-list (list :style "<link rel=\"stylesheet\" type=\"text/css\" media=\"screen\" href=\"stylesheets/stylesheet.css\">"
+                              :style-include-default nil))
 
 
 (defun export-org-file ()
   (message (format "\n--- %s ---\n" (file-name-nondirectory (buffer-file-name))))
   (cond
-   ((fboundp 'org-html-export-as-html)  ; recent org-mode
+   ((fboundp 'org-html-export-as-html)  ; org-mode 8
     (org-html-export-to-html))
+   ((and (fboundp 'org-export-as-html) (string< "7.9" org-version)) ; org-mode (7.9)
+    (org-export-as-html 1 stylesheet-p-list nil nil))
    ((and (fboundp 'org-export-as-html) (string< "6.32" org-version)) ; older org-mode (6.33)
-    (org-export-as-html 1 nil 
-                        (list :style "<link rel=\"stylesheet\" type=\"text/css\" media=\"screen\" href=\"stylesheets/stylesheet.css\">"
-                              :style-include-default nil)
-			nil nil))
+    (org-export-as-html 1 nil stylesheet-p-list nil nil))
    (t
     (message "Org-mode is too old or missing. Can't convert to HTML"))))
 
