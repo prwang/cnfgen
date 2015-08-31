@@ -165,14 +165,14 @@ graph {
   whitespace, followed by a whitespace separated sequence of zeros and
   onces of length $r\times c$. Here's a well formatted example.
 
-#+BEGIN_SRC 
+#+BEGIN_EXAMPLE
 5 6
 0 1 1 1 0 0
 1 1 0 1 0 0
 0 0 1 1 0 1
 0 0 1 0 1 1
 1 0 0 0 1 1
-#+END_SRC
+#+END_EXAMPLE
 
   which represents the bipartite graph
 
