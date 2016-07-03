@@ -62,7 +62,7 @@
   | =bipartite= | bipartite graphs        | *Yes* | *Yes* | *No*       | *No*   | *Yes*  |
   |-------------+-------------------------+-------+-------+------------+--------+--------|
 
-  If  the file  ends with  one of  the extensions  =.adjlist=, =.gml=,
+  If  the file  ends with  one of  the extensions  =.kthlist=, =.gml=,
   =.dot=, =.matrix=, =.dimacs= then the  program assumes that the file
   is the  corresponding format. It  is possible to specify  the format
   using the  =-gf= option in  the command line, which  is particularly
