@@ -282,13 +282,12 @@ problems well known to be challenging for certain SAT solvers.
     + contains a clique of =<k>= vertices
     + it has a coloring with =<c>= colors.
 
-
-    : cnfgen cliquecolor <n> <k> <c>
+    : cnfgen cliquecoloring <n> <k> <c>
 
     In particular the theoretical interesting  cases are when =<k>= is
     greater than =<c>=. For example
 
-    : cnfgen cliquecolor 100 25 24
+    : cnfgen cliquecoloring 100 25 24
     
     is clearly unsatisfiable.
 
