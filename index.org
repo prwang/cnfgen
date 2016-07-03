@@ -92,6 +92,7 @@ problems well known to be challenging for certain SAT solvers.
   + [[ramlb][Ramsey counterexample]] 
   + [[kclique][K-clique formula]]
   + [[kcolor][K-coloring formula]]
+  + [[cliquecolor][Clique-coloring formula]]
   + [[randkcnf][Random k-CNF]]
   + [[and][Single conjunction]]
   + [[or][Single disjunction]]
@@ -270,6 +271,24 @@ problems well known to be challenging for certain SAT solvers.
     For example a formula generated as 
  
     : cnfgen kcolor --gnd 100 2 --plantclique 4 
+    
+    is clearly unsatisfiable.
+
+*** K-coloring formula<<cliquecolor>>
+
+    The  formula  asserts that  there  exists  a  graph $G$  of  =<n>=
+    vertices that simultaneously 
+
+    + contains a clique of =<k>= vertices
+    + it has a coloring with =<c>= colors.
+
+
+    : cnfgen cliquecolor <n> <k> <c>
+
+    In particular the theoretical interesting  cases are when =<k>= is
+    greater than =<c>=. For example
+
+    : cnfgen cliquecolor 100 25 24
     
     is clearly unsatisfiable.
 

@@ -4,7 +4,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
 <title></title>
-<!-- 2016-04-28 Gio 19:23 -->
+<!-- 2016-07-04 Lun 00:30 -->
 <meta  http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta  name="generator" content="Org-mode" />
 <meta  name="author" content="Massimo Lauria" />
@@ -229,6 +229,8 @@ family follows.
 <li><a href="#kclique">K-clique formula</a>
 </li>
 <li><a href="#kcolor">K-coloring formula</a>
+</li>
+<li><a href="#cliquecolor">Clique-coloring formula</a>
 </li>
 <li><a href="#randkcnf">Random k-CNF</a>
 </li>
@@ -582,8 +584,43 @@ is clearly unsatisfiable.
 </div>
 
 <div id="outline-container-sec-3-0-17" class="outline-5">
-<h5 id="sec-3-0-17">Random K-CNF<a id="randkcnf" name="randkcnf"></a></h5>
+<h5 id="sec-3-0-17">K-coloring formula<a id="cliquecolor" name="cliquecolor"></a></h5>
 <div class="outline-text-5" id="text-3-0-17">
+<p>
+The  formula  asserts that  there  exists  a  graph \(G\)  of  <code>&lt;n&gt;</code>
+vertices that simultaneously 
+</p>
+
+<ul class="org-ul">
+<li>contains a clique of <code>&lt;k&gt;</code> vertices
+</li>
+<li>it has a coloring with <code>&lt;c&gt;</code> colors.
+</li>
+</ul>
+
+
+<pre class="example">
+cnfgen cliquecolor &lt;n&gt; &lt;k&gt; &lt;c&gt;
+</pre>
+
+<p>
+In particular the theoretical interesting  cases are when <code>&lt;k&gt;</code> is
+greater than <code>&lt;c&gt;</code>. For example
+</p>
+
+<pre class="example">
+cnfgen cliquecolor 100 25 24
+</pre>
+
+<p>
+is clearly unsatisfiable.
+</p>
+</div>
+</div>
+
+<div id="outline-container-sec-3-0-18" class="outline-5">
+<h5 id="sec-3-0-18">Random K-CNF<a id="randkcnf" name="randkcnf"></a></h5>
+<div class="outline-text-5" id="text-3-0-18">
 <p>
 Sample  a random  CNF with  <code>&lt;m&gt;</code> clauses  of <code>&lt;k&gt;</code>  literals over
 <code>&lt;n&gt;</code> variables. Clauses are sampled without replacement.
@@ -600,9 +637,9 @@ cnfgen kcnf &lt;k&gt; &lt;n&gt; &lt;m&gt;
 </div>
 </div>
 
-<div id="outline-container-sec-3-0-18" class="outline-5">
-<h5 id="sec-3-0-18">Single conjunction<a id="and" name="and"></a></h5>
-<div class="outline-text-5" id="text-3-0-18">
+<div id="outline-container-sec-3-0-19" class="outline-5">
+<h5 id="sec-3-0-19">Single conjunction<a id="and" name="and"></a></h5>
+<div class="outline-text-5" id="text-3-0-19">
 <p>
 Produce  a  CNF   made  by  unit  clauses,   <code>&lt;p&gt;</code>  positives  and
 <code>&lt;n&gt;</code> negatives.
@@ -614,9 +651,9 @@ cnfgen and &lt;p&gt; &lt;n&gt;
 </div>
 </div>
 
-<div id="outline-container-sec-3-0-19" class="outline-5">
-<h5 id="sec-3-0-19">Single disjunction<a id="or" name="or"></a></h5>
-<div class="outline-text-5" id="text-3-0-19">
+<div id="outline-container-sec-3-0-20" class="outline-5">
+<h5 id="sec-3-0-20">Single disjunction<a id="or" name="or"></a></h5>
+<div class="outline-text-5" id="text-3-0-20">
 <p>
 Produce  a  CNF   made  by a single clause, with <code>&lt;p&gt;</code> positives literals and
 <code>&lt;n&gt;</code> negatives ones.
