@@ -44,7 +44,7 @@
   + GML format ([[http://www.infosun.fim.uni-passau.de/Graphlet/GML/gml-tr.html][specification]])
   + DOT format if ``pygraphviz`` is installed ([[http://www.graphviz.org/content/dot-language][specification]])
   + DIMACS edge format ([[http://prolland.free.fr/works/research/dsat/dimacs.html][specification]])
-  + Adjacency list format ([[adjformat][specification]])
+  + KTH predecessor format ([[kthformat][specification]])
   + Matrix format ([[matrix][specification]])
 
   Different file  formats are  suitable for  specific graph  types, as
@@ -79,11 +79,13 @@
    This is the same convention used by graph library [[https://networkx.github.io/][NetworkX]].
 
 
-* Adjacency list format<<adjformat>>
+* KTH predecessors list format<<kthformat>>
 
-  The  adjacency  list graph  format  is  a  very simple  format  used
+  The  KTH predecessors  list  format  is a  very  simple format  used
   internally  at the  Proof  Complexity [[http://www.csc.kth.se/~jakobn/project-proofcplx/][research  group]]  at KTH  Royal
-  Institute of Technology.
+  Institute  of Technology.  It  is particularly  useful to  represent
+  the directed  acyclic graphs  of computational structure,  since for
+  each vertex the list of predecessors is specified.
   
   The file  can start with some  comments line, each of  them starting
   with character =c=. The next  non-blank line must contain the number
@@ -96,7 +98,7 @@
   of all vertices which have an edge to vertex =i=.
 
 
-** Adjacency list format — about DAGs representation
+** KTH predecessors list format — about DAGs representation
 
    When the vertices are enumerated  in topological order from sources
    to  sinks,  most formula  constructions  will  respect this  order.
@@ -104,13 +106,14 @@
    If such order  does not exists (i.e. the graph  is cyclic) an error
    is raised.
 
-** Adjacency list format — directed vs undirected graphs
+** KTH predecessors list format — directed vs undirected graphs
 
-   The  format  can represent  both  directed  and undirected  graphs,
+   Even  though  the  format  is particularly  suitable  for  directed
+   graphs,  it  can represent  both  directed  and undirected  graphs,
    depending on which type the generator expects. If interpreted as an
-   undirected graph, it is sufficient that each edge is represented in
-   one adjacency list,  even if it is strongly  suggested to represent
-   it in both.
+   undirected graph, and  edge $\{u,v\}$ considered to be  part of the
+   graph when either $u$ is in the list  of $v$, or when $v$ is in the
+   list of $u$, or both.
 
    Here’s an example
   

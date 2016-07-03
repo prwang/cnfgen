@@ -4,7 +4,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
 <title></title>
-<!-- 2016-04-28 Gio 19:18 -->
+<!-- 2016-07-04 Lun 00:22 -->
 <meta  http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta  name="generator" content="Org-mode" />
 <meta  name="author" content="Massimo Lauria" />
@@ -139,7 +139,7 @@ following file formats.
 </li>
 <li>DIMACS edge format (<a href="http://prolland.free.fr/works/research/dsat/dimacs.html">specification</a>)
 </li>
-<li>Adjacency list format (<a href="#adjformat">specification</a>)
+<li>KTH predecessor format (<a href="#kthformat">specification</a>)
 </li>
 <li>Matrix format (<a href="#matrix">specification</a>)
 </li>
@@ -250,12 +250,14 @@ This is the same convention used by graph library <a href="https://networkx.gith
 
 
 <div id="outline-container-sec-1" class="outline-3">
-<h3 id="sec-1">Adjacency list format<a id="adjformat" name="adjformat"></a></h3>
+<h3 id="sec-1">KTH predecessors list format<a id="kthformat" name="kthformat"></a></h3>
 <div class="outline-text-3" id="text-1">
 <p>
-The  adjacency  list graph  format  is  a  very simple  format  used
+The  KTH predecessors  list  format  is a  very  simple format  used
 internally  at the  Proof  Complexity <a href="http://www.csc.kth.se/~jakobn/project-proofcplx/">research  group</a>  at KTH  Royal
-Institute of Technology.
+Institute  of Technology.  It  is particularly  useful to  represent
+the directed  acyclic graphs  of computational structure,  since for
+each vertex the list of predecessors is specified.
 </p>
 
 <p>
@@ -277,7 +279,7 @@ of all vertices which have an edge to vertex <code>i</code>.
 
 
 <div id="outline-container-sec-1-1" class="outline-4">
-<h4 id="sec-1-1">Adjacency list format — about DAGs representation</h4>
+<h4 id="sec-1-1">KTH predecessors list format — about DAGs representation</h4>
 <div class="outline-text-4" id="text-1-1">
 <p>
 When the vertices are enumerated  in topological order from sources
@@ -290,14 +292,15 @@ is raised.
 </div>
 
 <div id="outline-container-sec-1-2" class="outline-4">
-<h4 id="sec-1-2">Adjacency list format — directed vs undirected graphs</h4>
+<h4 id="sec-1-2">KTH predecessors list format — directed vs undirected graphs</h4>
 <div class="outline-text-4" id="text-1-2">
 <p>
-The  format  can represent  both  directed  and undirected  graphs,
+Even  though  the  format  is particularly  suitable  for  directed
+graphs,  it  can represent  both  directed  and undirected  graphs,
 depending on which type the generator expects. If interpreted as an
-undirected graph, it is sufficient that each edge is represented in
-one adjacency list,  even if it is strongly  suggested to represent
-it in both.
+undirected graph, and  edge \(\{u,v\}\) considered to be  part of the
+graph when either \(u\) is in the list  of \(v\), or when \(v\) is in the
+list of \(u\), or both.
 </p>
 
 <p>
