@@ -50,17 +50,17 @@
   Different file  formats are  suitable for  specific graph  types, as
   shown in this table.
 
-  |-------------+-------------------------+-------+-------+------------+--------+--------|
-  | Graph type  | Description             | GML   | DOT   | Adj. lists | DIMACS | Matrix |
-  |-------------+-------------------------+-------+-------+------------+--------+--------|
-  | =simple=    | simple undirected graph | *Yes* | *Yes* | *Yes*      | *Yes*  | *No*   |
-  |-------------+-------------------------+-------+-------+------------+--------+--------|
-  | =digraph=   | directed graph          | *Yes* | *Yes* | *Yes*      | *Yes*  | *No*   |
-  |-------------+-------------------------+-------+-------+------------+--------+--------|
-  | =dag=       | directed acyclic graph  | *Yes* | *Yes* | *Yes*      | *No*   | *No*   |
-  |-------------+-------------------------+-------+-------+------------+--------+--------|
-  | =bipartite= | bipartite graphs        | *Yes* | *Yes* | *No*       | *No*   | *Yes*  |
-  |-------------+-------------------------+-------+-------+------------+--------+--------|
+  |-------------+-------------------------+-------+-------+-----------+--------+--------|
+  | Graph type  | Description             | GML   | DOT   | KTH lists | DIMACS | Matrix |
+  |-------------+-------------------------+-------+-------+-----------+--------+--------|
+  | =simple=    | simple undirected graph | *Yes* | *Yes* | *Yes*     | *Yes*  | *No*   |
+  |-------------+-------------------------+-------+-------+-----------+--------+--------|
+  | =digraph=   | directed graph          | *Yes* | *Yes* | *Yes*     | *Yes*  | *No*   |
+  |-------------+-------------------------+-------+-------+-----------+--------+--------|
+  | =dag=       | directed acyclic graph  | *Yes* | *Yes* | *Yes*     | *No*   | *No*   |
+  |-------------+-------------------------+-------+-------+-----------+--------+--------|
+  | =bipartite= | bipartite graphs        | *Yes* | *Yes* | *No*      | *No*   | *Yes*  |
+  |-------------+-------------------------+-------+-------+-----------+--------+--------|
 
   If  the file  ends with  one of  the extensions  =.kthlist=, =.gml=,
   =.dot=, =.matrix=, =.dimacs= then the  program assumes that the file
@@ -83,9 +83,9 @@
 
   The  KTH predecessors  list  format  is a  very  simple format  used
   internally  at the  Proof  Complexity [[http://www.csc.kth.se/~jakobn/project-proofcplx/][research  group]]  at KTH  Royal
-  Institute  of Technology.  It  is particularly  useful to  represent
-  the directed  acyclic graphs  of computational structure,  since for
-  each vertex the list of predecessors is specified.
+  Institute of Technology. It is  particularly useful to represent the
+  directed acyclic graphs of  computational structures, since for each
+  vertex the list of predecessors is specified.
   
   The file  can start with some  comments line, each of  them starting
   with character =c=. The next  non-blank line must contain the number

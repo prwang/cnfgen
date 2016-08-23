@@ -44,6 +44,7 @@ problems well known to be challenging for certain SAT solvers.
   - =cnfgen= generator for [[file:background.org][CNF formula]] benchmarks,
   - the =cnfformula=  library ([[http://cnfgen.readthedocs.io/en/latest/][read  the docs]])  for more  flexible CNF
     generation and manipulation,
+  - CNF based on graph structures (see [[file:graphformats.org][available formats]]).
   - behind-the-scene integration with many SAT solvers,
   - output in DIMACS and LaTeX formats,
   - formula [[file:transformation.org][post-processing]].
