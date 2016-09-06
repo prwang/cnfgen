@@ -34,15 +34,15 @@
 #+end_html
 
 
-  Some formula recipes in =cnfgen= have a graph based structure, which
-  can  be either  a  *simple* undirected  graph,  a *biparite*  graph,
-  a *directed*  graph or  a *dag*  (a directed  acyclic graph).  It is
+  The  structure of  some  formula  recipes in  =cnfgen=  is based  on
+  graphs, which  can be either *simple*  undirected graphs, *biparite*
+  graphs, *directed* graphs or *dag*  (directed acyclic graphs). It is
   possible  either to  read  graphs  from files  or  to generate  them
   internally.  The  =cnfgen= tool  accepts  and  saves graphs  in  the
   following file formats.
 
   + GML format ([[http://www.infosun.fim.uni-passau.de/Graphlet/GML/gml-tr.html][specification]])
-  + DOT format if ``pygraphviz`` is installed ([[http://www.graphviz.org/content/dot-language][specification]])
+  + DOT format if ``NetworkX`` supports it ([[http://www.graphviz.org/content/dot-language][specification]])
   + DIMACS edge format ([[http://prolland.free.fr/works/research/dsat/dimacs.html][specification]])
   + KTH predecessor format ([[kthformat][specification]])
   + Matrix format ([[matrix][specification]])
@@ -59,14 +59,14 @@
   |-------------+-------------------------+-------+-------+-----------+--------+--------|
   | =dag=       | directed acyclic graph  | *Yes* | *Yes* | *Yes*     | *No*   | *No*   |
   |-------------+-------------------------+-------+-------+-----------+--------+--------|
-  | =bipartite= | bipartite graphs        | *Yes* | *Yes* | *No*      | *No*   | *Yes*  |
+  | =bipartite= | bipartite graphs        | *Yes* | *Yes* | *Yes*     | *No*   | *Yes*  |
   |-------------+-------------------------+-------+-------+-----------+--------+--------|
 
   If  the file  ends with  one of  the extensions  =.kthlist=, =.gml=,
   =.dot=, =.matrix=, =.dimacs= then the  program assumes that the file
   is the  corresponding format. It  is possible to specify  the format
   using the  =-gf= option in  the command line, which  is particularly
-  useful when the graph is read  from standard input or written of the
+  useful when the graph is read  from standard input or written on the
   standard  output, or  when the  file  extension does  not match  its
   file format.
 
@@ -85,26 +85,27 @@
   internally  at the  Proof  Complexity [[http://www.csc.kth.se/~jakobn/project-proofcplx/][research  group]]  at KTH  Royal
   Institute of Technology. It is  particularly useful to represent the
   directed acyclic graphs of  computational structures, since for each
-  vertex the list of predecessors is specified.
+  vertex it specifies the list of predecessors. Nevertheless it can be
+  used to represent any of the graph types.
   
-  The file  can start with some  comments line, each of  them starting
-  with character =c=. The next  non-blank line must contain the number
-  n of vertices in the graph. Then  there must be $n$ non black lines,
-  one for each vertex 1 ≤ i ≤ n. The lines have the format:
+  The file begins with zero or more comments lines, each starting with
+  character =c=. The next non-blank line  must contain the number n of
+  vertices in the graph. Then there must be up to $n$ non blank lines,
+  each with the format:
 
-  : i : <j1> <j2> <j3> ... <jk>
+  : i : <j1> <j2> <j3> ... <jk> 0
     
-  where =<j1> <j2> <j3>  ... <jk>= is the ordered list
-  of all vertices which have an edge to vertex =i=.
-
+  where =<j1>  <j2> <j3> ... <jk>=  is the list of  all vertices which
+  have  an edge  toward  vertex  =i=. 
 
 ** KTH predecessors list format — about DAGs representation
 
-   When the vertices are enumerated  in topological order from sources
-   to  sinks,  most formula  constructions  will  respect this  order.
-   If that  is not the case,  an arbitrary topological order  is used.
-   If such order  does not exists (i.e. the graph  is cyclic) an error
-   is raised.
+   In a  DAG the sequence of  vertices $1$,... ,$n$ is  expected to be
+   a   topological  order   from   sources  to   sinks,  and   formula
+   constructions  will respect  this order.  Each line  is indexed  by
+   a vertex =i=. Such sequence of indices must be increasing, i.e., it
+   must be the sequence of vertices from $1$ to $n$, possibly skipping
+   some index.
 
 ** KTH predecessors list format — directed vs undirected graphs
 
@@ -121,11 +122,11 @@
    : c This is a DAG of 5 vertices
    : c
    : 5
-   : 1  :
-   : 2  : 
-   : 3  : 1  
-   : 4  : 2  3  
-   : 5  : 2  4
+   : 1  : 0
+   : 2  : 0
+   : 3  : 1  0 
+   : 4  : 2  3  0  
+   : 5  : 2  4  0
     
    which represents the directed acyclic graph
 
@@ -157,6 +158,85 @@ graph {
 #+RESULTS:
 [[file:images/adjformatS.png]]
 
+** KTH predecessors list format — bipartite graphs
+
+   The interpretation  of a file  as a bipartite graph  is essentially
+   the same  as it is for  simple graph, with the  difference that the
+   bipartition  is   greedily  computed   while  reading   the  graph.
+   Let's first see two very explicative examples of the format
+
+   : c listing only left side vertices
+   : 11
+   : 1 : 7  8  9 0
+   : 2 : 6  7  9 0
+   : 3 : 8  9 11 0
+   : 4 : 8 10 11 0
+   : 5 : 6 10 11 0
+
+   As the example  shows, it is not necessary to  list the edges going
+   toward  the  right  side  vertices,  because  they  are  implicitly
+   represented  already.  Alternatively it  is  also  possible to  use
+   the following representation.
+
+   : c listing left and right side vertices
+   : 11
+   : 1 : 7  8  9 0
+   : 2 : 6  7  9 0
+   : 3 : 8  9 11 0
+   : 4 : 8 10 11 0
+   : 5 : 6 10 11 0
+   : 6 : 2  5  0
+   : 7 : 1  2  0
+   : 8 : 1  3  4 0
+   : 9 : 1  2  3 0
+   : 10 : 4 5 0
+   : 11 : 3 4 5 0
+   
+
+#+BEGIN_SRC dot :cmd neato :file images/kthformatBI.png :exports results
+  graph {
+   1  [pos="0,5!"]
+   2  [pos="0,4!"]
+   3  [pos="0,3!"]
+   4  [pos="0,2!"]
+   5  [pos="0,1!"]
+   6  [pos="2,5.5!"]
+   7  [pos="2,4.5!"]
+   8  [pos="2,3.5!"]
+   9  [pos="2,2.5!"]
+   10 [pos="2,1.5!"]
+   11 [pos="2,0.5!"]
+   1 -- {7 8 9}
+   2 -- {6 7 9}
+   3 -- {8 9 11}
+   4 -- {8 10 11}
+   5 -- {6 10 11}
+  }
+#+END_SRC
+
+#+RESULTS:
+[[file:images/kthformatBI.png]]
+   
+   The  examples should  be  clear  enough. The  precise  rule of  the
+   bipartite graph interpretation is as follows. When the parser finds
+   a row
+
+   : i : <j1> <j2> <j3> ... <jk> 0
+
+   it checks whether any of the vertices has been already assigned
+   to either the left  or the right side of the  graph, namely color 0
+   and 1 respectively. If that is the case then the remaining vertices
+   in the line can be colored in  a unique way. A conflict arises when
+   a vertex $v$  has been already assigned by to  one color because of
+   previous  lines, and  a  new line  forces $v$  to  the other color.
+   In such case the parser gives error.
+
+   In case no vertex in the line has a color, the index =i= gets color
+   0  (i.e. left  side of  the  bipartite) and  =j1=, ...  , =jk=  get
+   color 1.
+   
+   This choice is arbitrary and greedy,  hence it is possible that the
+   parsing fails even if the graph is actually bipartite.
 
 * Matrix format<<matrix>>
 
@@ -166,7 +246,7 @@ graph {
 
   The  file  consists  on  two   numbers  =r=  and  =c=  separated  by
   whitespace, followed by a whitespace separated sequence of zeros and
-  onces of length $r\times c$. Here's a well formatted example.
+  ones of length $r\times c$. Here's a well formatted example.
 
 #+BEGIN_EXAMPLE
 5 6
