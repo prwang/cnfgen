@@ -4,7 +4,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
 <title></title>
-<!-- 2016-09-06 Mar 14:24 -->
+<!-- 2016-11-14 Lun 08:18 -->
 <meta  http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta  name="generator" content="Org-mode" />
 <meta  name="author" content="Massimo Lauria" />
@@ -114,7 +114,7 @@ for the JavaScript code in this tag.
           <h2 id="project_tagline">Cool benchmarks for your SAT solver!</h2>
 
             <section id="downloads">
-              <a class="zip_download_link" href="https://github.com/MassimoLauria/cnfgen/zipball/master">Download this project as a .zip file</a>
+             <a class="zip_download_link" href="https://github.com/MassimoLauria/cnfgen/zipball/master">Download this project as a .zip file</a>
               <a class="tar_download_link" href="https://github.com/MassimoLauria/cnfgen/tarball/master">Download this project as a tar.gz file</a>
             </section>
         </header>
@@ -287,7 +287,7 @@ a   topological  order   from   sources  to   sinks,  and   formula
 constructions  will respect  this order.  Each line  is indexed  by
 a vertex <code>i</code>. Such sequence of indices must be increasing, i.e., it
 must be the sequence of vertices from \(1\) to \(n\), possibly skipping
-some index.
+some indices.
 </p>
 </div>
 </div>
@@ -348,8 +348,8 @@ and the simple undirected graph
 <p>
 The interpretation  of a file  as a bipartite graph  is essentially
 the same  as it is for  simple graph, with the  difference that the
-bipartition  is   greedily  computed   while  reading   the  graph.
-Let's first see two very explicative examples of the format
+bipartition  is computed  in  a greedy  fashion  while reading  the
+graph. Let's first see two very explicative examples of the format
 </p>
 
 <pre class="example">
@@ -394,8 +394,12 @@ c listing left and right side vertices
 
 <p>
 The  examples should  be  clear  enough. The  precise  rule of  the
-bipartite graph interpretation is as follows. When the parser finds
-a row
+bipartite graph interpretation is  as follows. Vertices are colored
+with either left (<code>L</code>) or right  (<code>R</code>) colors during the parsing of
+the file. At the beginning  the coloring is completely unspecified,
+and  colors are  assigned to  some vertices  every time  the parser
+process the adjacency list  of a vertex. When the
+parser finds a list
 </p>
 
 <pre class="example">
@@ -403,25 +407,39 @@ i : &lt;j1&gt; &lt;j2&gt; &lt;j3&gt; ... &lt;jk&gt; 0
 </pre>
 
 <p>
-it checks whether any of the vertices has been already assigned
-to either the left  or the right side of the  graph, namely color 0
-and 1 respectively. If that is the case then the remaining vertices
-in the line can be colored in  a unique way. A conflict arises when
-a vertex \(v\)  has been already assigned by to  one color because of
-previous  lines, and  a  new line  forces \(v\)  to  the other color.
-In such case the parser gives error.
+it attempts  to color as  <code>L : R  R R ...  R</code>. If this is
+compatible with the coloring computed so  far, it moves to the next
+list.  Otherwise it  attempts  the coloring  <code>R  : L  L  L ...  L</code>.
+If neither of this attempts work, then the parser raise and error. 
 </p>
 
 <p>
-In case no vertex in the line has a color, the index <code>i</code> gets color
-0  (i.e. left  side of  the  bipartite) and  <code>j1</code>, &#x2026;  , <code>jk</code>  get
-color 1.
+Essentially  an error  occurs when  a vertex  \(v\) has  been already
+assigned by to one color because  of previous lines, and a new line
+forces \(v\) to the other color.
 </p>
 
 <p>
-This choice is arbitrary and greedy,  hence it is possible that the
-parsing fails even if the graph is actually bipartite.
+If a vertex has no color by the end of the parsing (i.e. the vertex
+did not occur  in any adjacency list and its  own adjacency list is
+not specified) then it is assigned the color <code>R</code>.
 </p>
+
+<p>
+<b>Remarks</b> the bi-coloring process is arbitrary and greedy, hence it
+is possible  that the parsing fails  even if the graph  is actually
+bipartite. Furthermore the same graph may get different bipartition
+depending on its file representation.
+</p>
+
+<ul class="org-ul">
+<li>isolated  vertices are  colored either  <code>L</code> or  <code>R</code> if  the file
+specifies it adjacency list or not, respectively.
+</li>
+<li>the order  of the vertices is important. The  first time a vertex
+occur the parser attempts to color it <code>L</code>, if possible. 
+</li>
+</ul>
 </div>
 </div>
 </div>
