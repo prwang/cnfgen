@@ -22,7 +22,7 @@ from networkx  import empty_graph
 from textwrap import dedent
 
 @cnfformula.families.register_cnf_generator
-def SubgraphFormula(graph,templates, symmetric=False):
+def SubgraphFormula(graph,templates, **kwargs):
     """Test whether a graph contains one of the templates.
 
     Given a graph :math:`G` and a sequence of template graphs
@@ -45,10 +45,11 @@ def SubgraphFormula(graph,templates, symmetric=False):
     symmetric:
         all template graphs are symmetric wrt permutations of
         vertices. This allows some optimization in the search space of
-        the assignments.
+        the assignments. (dafault: False)
 
-    induce: 
-        force the subgraph to be induced (i.e. no additional edges are allowed)
+    functional: 
+        a vertex of the template cannot be mapped to several vertices of the graph.
+        This is indeed the natural and desirable features of the encoding (default: True)
 
 
     Returns
@@ -58,7 +59,12 @@ def SubgraphFormula(graph,templates, symmetric=False):
     """
 
     F=CNF()
-
+    
+    functional = kwargs.pop('functional', True)
+    symmetric  = kwargs.pop('symmetric',  False)
+    if kwargs:
+        raise TypeError('Unexpected **kwargs: %r' % kwargs)
+            
     
     # One of the templates is chosen to be the subgraph
     if len(templates)==0:
@@ -82,12 +88,20 @@ def SubgraphFormula(graph,templates, symmetric=False):
         F.header=dedent("""\
                  CNF encoding of the claim that a graph contains one among
                  a family of {0} possible subgraphs.
-                 """.format(len(templates))) + F.header
+
+                 functionality axioms = {1}
+                 symmetry breaking    = {2} (only correct on symmetric subgraphs!)
+
+                 """.format(len(templates), functional, symmetric)) + F.header
     else:
         F.header=dedent("""\
                  CNF encoding of the claim that a graph contains an induced
                  copy of a subgraph.
-                 """.format(len(templates)))  + F.header
+
+                 functional axions = {1}
+                 symmetry breaking = {2} (only correct on symmetric subgraphs!)
+
+                 """.format(len(templates), functional, symmetric))  + F.header
 
     # A subgraph is chosen
     N=graph.order()
@@ -95,20 +109,16 @@ def SubgraphFormula(graph,templates, symmetric=False):
 
     var_name = lambda i,j: "S_{{{0},{1}}}".format(i,j)
 
-    if symmetric:
-        mapping = F.unary_mapping(range(k),range(N),var_name=var_name,
-                                  functional=True,injective=True,
-                                  nondecreasing=True)
-    else:
-        mapping = F.unary_mapping(range(k),range(N),var_name=var_name,
-                                  functional=True,injective=True,
-                                  nondecreasing=False)
-
+    mapping = F.unary_mapping(range(k),range(N),var_name=var_name,
+                              functional=functional,
+                              injective=True,
+                              nondecreasing= symmetric)
+    
     for v in mapping.variables():
         F.add_variable( v )
 
     for cls in mapping.clauses():
-        F.add_clause( cls, strict=True )
+        F.add_clause_unsafe( cls )
         
     # The selectors choose a template subgraph.  A mapping must map
     # edges to edges and non-edges to non-edges for the active
@@ -161,7 +171,7 @@ def SubgraphFormula(graph,templates, symmetric=False):
 
 
 @cnfformula.families.register_cnf_generator
-def CliqueFormula(G,k):
+def CliqueFormula(G,k,**kwargs):
     """Test whether a graph has a k-clique.
 
     Given a graph :math:`G` and a non negative value :math:`k`, the
@@ -171,19 +181,34 @@ def CliqueFormula(G,k):
     ----------
     G : networkx.Graph
         a simple graph
+
     k : a non negative integer
         clique size
+
+    symmetry_break:  
+        this allows some optimization in the search space of solutions, 
+        due to the symmetry of the problem. (dafault: False)
+
+    functional: 
+        the :math:`k` pointers in the graph can only point to a single vertex each (default: True)
 
     Returns
     -------
     a CNF object
 
     """
-    return SubgraphFormula(G,[complete_graph(k)],symmetric=True)
+    functional     = kwargs.pop('functional'    ,  True)
+    symmetrybreak  = kwargs.pop('symmetrybreak',  False)
+
+    if kwargs:
+        raise TypeError('Unexpected **kwargs: %r' % kwargs)
+    return SubgraphFormula(G,[complete_graph(k)],
+                           symmetric=symmetrybreak,
+                           functional=functional)
 
 
 @cnfformula.families.register_cnf_generator
-def BinaryCliqueFormula(G,k):
+def BinaryCliqueFormula(G,k, symmetrybreak = False):
     """Test whether a graph has a k-clique.
 
     Given a graph :math:`G` and a non negative value :math:`k`, the
@@ -195,8 +220,14 @@ def BinaryCliqueFormula(G,k):
     ----------
     G : networkx.Graph
         a simple graph
+
     k : a non negative integer
         clique size
+
+    symmetrybreak:  
+        this allows some optimization in the search space of solutions, 
+        due to the symmetry of the problem. (dafault: False)
+
 
     Returns
     -------
@@ -208,19 +239,27 @@ def BinaryCliqueFormula(G,k):
     
     clauses_gen=F.binary_mapping(xrange(1,k+1), G.nodes(),
                                  injective = True,
-                                 nondecreasing = True)
+                                 nondecreasing = symmetrybreak)
 
     for v in clauses_gen.variables():
         F.add_variable(v)
         
     for c in clauses_gen.clauses():
-        F.add_clause(c,strict=True)
+        F.add_clause_unsafe(c)
 
-    for (i1,i2),(v1,v2) in product(combinations(xrange(1,k+1),2),
-                                   combinations(G.nodes(),2)):
+
+    if symmetrybreak:
+            # Using non-decreasing map to represent a subset
+        localmaps = product(combinations(xrange(1,k+1),2),
+                            combinations(G.nodes(),2))
+    else:
+        localmaps = product(combinations(xrange(1,k+1),2),
+                            permutations(G.nodes(),2))
+        
+    for (i1,i2),(v1,v2) in localmaps:
     
         if not G.has_edge(v1,v2):
-            F.add_clause( clauses_gen.forbid_image(i1,v1) + clauses_gen.forbid_image(i2,v2),strict=True)
+            F.add_clause_unsafe( clauses_gen.forbid_image(i1,v1) + clauses_gen.forbid_image(i2,v2))
 
     return F
 
@@ -248,7 +287,7 @@ def RamseyWitnessFormula(G,k,s):
     a CNF object
 
     """
-    return SubgraphFormula(G,[complete_graph(k),empty_graph(s)],symmetric=True)
+    return SubgraphFormula(G,[complete_graph(k),empty_graph(s)],symmetric=True,functional=True)
 
 
 @cnfformula.cmdline.register_cnfgen_subcommand
@@ -266,6 +305,10 @@ class KCliqueCmdHelper(object):
         - `parser`: parser to load with options.
         """
         parser.add_argument('k',metavar='<k>',type=int,action='store',help="size of the clique to be found")
+        parser.add_argument('--nonfunctional',action='store_true',default=False,
+                            help="avoids functionality axioms")
+        parser.add_argument('--symmetrybreak',action='store_true',default=False,
+                            help="makes SAT solving more efficient leveraging symmetry of the problem")
         SimpleGraphHelper.setup_command_line(parser)
 
 
@@ -277,7 +320,9 @@ class KCliqueCmdHelper(object):
         - `args`: command line options
         """
         G = SimpleGraphHelper.obtain_graph(args)
-        return CliqueFormula(G,args.k)
+        return CliqueFormula(G,args.k,
+                             functional= not args.nonfunctional,
+                             symmetrybreak = args.symmetrybreak)
 
 
 @cnfformula.cmdline.register_cnfgen_subcommand
@@ -295,6 +340,8 @@ class BinaryKCliqueCmdHelper(object):
         - `parser`: parser to load with options.
         """
         parser.add_argument('k',metavar='<k>',type=int,action='store',help="size of the clique to be found")
+        parser.add_argument('--symmetrybreak',action='store_true',default=False,
+                            help="makes SAT solving more efficient leveraging symmetry of the problem")
         SimpleGraphHelper.setup_command_line(parser)
 
 
@@ -306,7 +353,9 @@ class BinaryKCliqueCmdHelper(object):
         - `args`: command line options
         """
         G = SimpleGraphHelper.obtain_graph(args)
-        return BinaryCliqueFormula(G,args.k)
+        return BinaryCliqueFormula(G,args.k,
+                                   symmetrybreak = args.symmetrybreak)
+
 
 @cnfformula.cmdline.register_cnfgen_subcommand
 class RWCmdHelper(object):
@@ -366,6 +415,6 @@ class SubGraphCmdHelper(object):
         """
         G = SimpleGraphHelper.obtain_graph(args,suffix="")
         T = SimpleGraphHelper.obtain_graph(args,suffix="T")
-        return SubgraphFormula(G,[T],symmetric=False)
+        return SubgraphFormula(G,[T],symmetric=False,functional=True)
 
 
