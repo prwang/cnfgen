@@ -4,7 +4,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
 <title></title>
-<!-- 2016-11-14 Lun 08:18 -->
+<!-- 2016-11-24 Gio 01:01 -->
 <meta  http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta  name="generator" content="Org-mode" />
 <meta  name="author" content="Massimo Lauria" />
@@ -139,7 +139,7 @@ following file formats.
 </li>
 <li>DIMACS edge format (<a href="http://prolland.free.fr/works/research/dsat/dimacs.html">specification</a>)
 </li>
-<li>KTH predecessor format (<a href="#kthformat">specification</a>)
+<li>KTH adjacency list format (<a href="#kthformat">specification</a>)
 </li>
 <li>Matrix format (<a href="#matrix">specification</a>)
 </li>
@@ -250,62 +250,66 @@ This is the same convention used by graph library <a href="https://networkx.gith
 
 
 <div id="outline-container-sec-1" class="outline-3">
-<h3 id="sec-1">KTH predecessors list format<a id="kthformat" name="kthformat"></a></h3>
+<h3 id="sec-1">KTH adjacency list format<a id="kthformat" name="kthformat"></a></h3>
 <div class="outline-text-3" id="text-1">
 <p>
-The  KTH predecessors  list  format  is a  very  simple format  used
-internally  at the  Proof  Complexity <a href="http://www.csc.kth.se/~jakobn/project-proofcplx/">research  group</a>  at KTH  Royal
-Institute of Technology. It is  particularly useful to represent the
-directed acyclic graphs of  computational structures, since for each
-vertex it specifies the list of predecessors. Nevertheless it can be
-used to represent any of the graph types.
+[<a href="KTHlistFormat.txt">Full specification</a> by <a href="http://www.csc.kth.se/~jakobn/">Jakob Nordström</a>]
 </p>
 
+
 <p>
-The file begins with zero or more comments lines, each starting with
-character <code>c</code>. The next non-blank line  must contain the number n of
-vertices in the graph. Then there must be up to \(n\) non blank lines,
-each with the format:
+The <code>kthlist</code>  adjacency list  graph format  has been  introduced by
+<a href="http://www.csc.kth.se/~jakobn/">Jakob Nordström</a> of the Proof  Complexity <a href="http://www.csc.kth.se/~jakobn/project-proofcplx/">research group</a> at KTH Royal
+Institute  of  Technologyas  as  an  efficient  and  simple  way  to
+represent  sparse  graphs  for   applications  in  SAT  solving  and
+proof complexity.
 </p>
 
-<pre class="example">
-i : &lt;j1&gt; &lt;j2&gt; &lt;j3&gt; ... &lt;jk&gt; 0
-</pre>
 
 <p>
-where <code>&lt;j1&gt;  &lt;j2&gt; &lt;j3&gt; ... &lt;jk&gt;</code>  is the list of  all vertices which
-have  an edge  toward  vertex  <code>i</code>. 
+The  format can  specify  all four  types of  graph,  but the  exact
+interpretation  of   the  file  depends   a  bit  on   the  context.
 </p>
 </div>
 
 <div id="outline-container-sec-1-1" class="outline-4">
-<h4 id="sec-1-1">KTH predecessors list format — about DAGs representation</h4>
+<h4 id="sec-1-1">KTH predecessors list format — <code>digraph</code></h4>
 <div class="outline-text-4" id="text-1-1">
 <p>
-In a  DAG the sequence of  vertices \(1\),&#x2026; ,\(n\) is  expected to be
-a   topological  order   from   sources  to   sinks,  and   formula
-constructions  will respect  this order.  Each line  is indexed  by
-a vertex <code>i</code>. Such sequence of indices must be increasing, i.e., it
-must be the sequence of vertices from \(1\) to \(n\), possibly skipping
-some indices.
+The <code>kthlist</code>  format  as   a  straightforward  interpretation  as
+a directed graph, as described in the format specification.
 </p>
 </div>
 </div>
 
 <div id="outline-container-sec-1-2" class="outline-4">
-<h4 id="sec-1-2">KTH predecessors list format — directed vs undirected graphs</h4>
+<h4 id="sec-1-2">KTH adjacency list format — <code>dag</code></h4>
 <div class="outline-text-4" id="text-1-2">
 <p>
-Even  though  the  format  is particularly  suitable  for  directed
-graphs,  it  can represent  both  directed  and undirected  graphs,
-depending on which type the generator expects. If interpreted as an
-undirected graph, and  edge \(\{u,v\}\) considered to be  part of the
-graph when either \(u\) is in the list  of \(v\), or when \(v\) is in the
-list of \(u\), or both.
+When CNFgen expects  a directed acyclic graph, it  expects the file
+in  <code>kthlist</code> format  to  express very  explicitly the  topological
+order  of the  vertices. Namely  the  sequence of  \(1\),&#x2026; ,\(n\)  is
+expected to  be a topological  order from  sources to sinks  of the
+vertices,  and   formula  constructions  in  CNFgen   will  respect
+this order.
+</p>
+</div>
+</div>
+
+<div id="outline-container-sec-1-3" class="outline-4">
+<h4 id="sec-1-3">KTH predecessors list format — <code>simple</code></h4>
+<div class="outline-text-4" id="text-1-3">
+<p>
+Ideally if a vertex \(v\) has \(u\)  in its adjacency list then the \(v\)
+should be explicitly listed in the adjacency list of \(v\). CNFgen is
+liberal and do not expect that  and edge \(\{u,v\}\) considered to be
+in graph when either  \(u\) is in the list of \(v\), or  when \(v\) is in
+the list of \(u\), or both.
 </p>
 
 <p>
-Here’s an example
+Here’s an  example of how  a graph  with missing inverted  edges is
+interpreted as an undirected graph. The file
 </p>
 
 <pre class="example">
@@ -321,7 +325,7 @@ c
 </pre>
 
 <p>
-which represents the directed acyclic graph
+represents the directed acyclic graph
 </p>
 
 
@@ -342,9 +346,9 @@ and the simple undirected graph
 </div>
 </div>
 
-<div id="outline-container-sec-1-3" class="outline-4">
-<h4 id="sec-1-3">KTH predecessors list format — bipartite graphs</h4>
-<div class="outline-text-4" id="text-1-3">
+<div id="outline-container-sec-1-4" class="outline-4">
+<h4 id="sec-1-4">KTH predecessors list format — bipartite graphs</h4>
+<div class="outline-text-4" id="text-1-4">
 <p>
 The interpretation  of a file  as a bipartite graph  is essentially
 the same  as it is for  simple graph, with the  difference that the
@@ -399,7 +403,7 @@ with either left (<code>L</code>) or right  (<code>R</code>) colors during the p
 the file. At the beginning  the coloring is completely unspecified,
 and  colors are  assigned to  some vertices  every time  the parser
 process the adjacency list  of a vertex. When the
-parser finds a list
+parser finds an adjacency list
 </p>
 
 <pre class="example">
@@ -410,7 +414,7 @@ i : &lt;j1&gt; &lt;j2&gt; &lt;j3&gt; ... &lt;jk&gt; 0
 it attempts  to color as  <code>L : R  R R ...  R</code>. If this is
 compatible with the coloring computed so  far, it moves to the next
 list.  Otherwise it  attempts  the coloring  <code>R  : L  L  L ...  L</code>.
-If neither of this attempts work, then the parser raise and error. 
+If neither of this attempts work, then the parser emits an error. 
 </p>
 
 <p>
@@ -437,7 +441,7 @@ depending on its file representation.
 specifies it adjacency list or not, respectively.
 </li>
 <li>the order  of the vertices is important. The  first time a vertex
-occur the parser attempts to color it <code>L</code>, if possible. 
+occur the parser attempts first to color it <code>L</code> and then <code>R</code>.
 </li>
 </ul>
 </div>

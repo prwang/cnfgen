@@ -44,7 +44,7 @@
   + GML format ([[http://www.infosun.fim.uni-passau.de/Graphlet/GML/gml-tr.html][specification]])
   + DOT format if ``NetworkX`` supports it ([[http://www.graphviz.org/content/dot-language][specification]])
   + DIMACS edge format ([[http://prolland.free.fr/works/research/dsat/dimacs.html][specification]])
-  + KTH predecessor format ([[kthformat][specification]])
+  + KTH adjacency list format ([[kthformat][specification]])
   + Matrix format ([[matrix][specification]])
 
   Different file  formats are  suitable for  specific graph  types, as
@@ -79,44 +79,45 @@
    This is the same convention used by graph library [[https://networkx.github.io/][NetworkX]].
 
 
-* KTH predecessors list format<<kthformat>>
+* KTH adjacency list format<<kthformat>>
 
-  The  KTH predecessors  list  format  is a  very  simple format  used
-  internally  at the  Proof  Complexity [[http://www.csc.kth.se/~jakobn/project-proofcplx/][research  group]]  at KTH  Royal
-  Institute of Technology. It is  particularly useful to represent the
-  directed acyclic graphs of  computational structures, since for each
-  vertex it specifies the list of predecessors. Nevertheless it can be
-  used to represent any of the graph types.
-  
-  The file begins with zero or more comments lines, each starting with
-  character =c=. The next non-blank line  must contain the number n of
-  vertices in the graph. Then there must be up to $n$ non blank lines,
-  each with the format:
+  [[[file:KTHlistFormat.txt][Full specification]] by [[http://www.csc.kth.se/~jakobn/][Jakob Nordström]]]
 
-  : i : <j1> <j2> <j3> ... <jk> 0
-    
-  where =<j1>  <j2> <j3> ... <jk>=  is the list of  all vertices which
-  have  an edge  toward  vertex  =i=. 
 
-** KTH predecessors list format — about DAGs representation
+  The =kthlist=  adjacency list  graph format  has been  introduced by
+  [[http://www.csc.kth.se/~jakobn/][Jakob Nordström]] of the Proof  Complexity [[http://www.csc.kth.se/~jakobn/project-proofcplx/][research group]] at KTH Royal
+  Institute  of  Technologyas  as  an  efficient  and  simple  way  to
+  represent  sparse  graphs  for   applications  in  SAT  solving  and
+  proof complexity.
 
-   In a  DAG the sequence of  vertices $1$,... ,$n$ is  expected to be
-   a   topological  order   from   sources  to   sinks,  and   formula
-   constructions  will respect  this order.  Each line  is indexed  by
-   a vertex =i=. Such sequence of indices must be increasing, i.e., it
-   must be the sequence of vertices from $1$ to $n$, possibly skipping
-   some indices.
 
-** KTH predecessors list format — directed vs undirected graphs
+  The  format can  specify  all four  types of  graph,  but the  exact
+  interpretation  of   the  file  depends   a  bit  on   the  context.
 
-   Even  though  the  format  is particularly  suitable  for  directed
-   graphs,  it  can represent  both  directed  and undirected  graphs,
-   depending on which type the generator expects. If interpreted as an
-   undirected graph, and  edge $\{u,v\}$ considered to be  part of the
-   graph when either $u$ is in the list  of $v$, or when $v$ is in the
-   list of $u$, or both.
+** KTH predecessors list format — =digraph=
 
-   Here’s an example
+   The =kthlist=  format  as   a  straightforward  interpretation  as
+   a directed graph, as described in the format specification.
+
+** KTH adjacency list format — =dag=
+
+   When CNFgen expects  a directed acyclic graph, it  expects the file
+   in  =kthlist= format  to  express very  explicitly the  topological
+   order  of the  vertices. Namely  the  sequence of  $1$,... ,$n$  is
+   expected to  be a topological  order from  sources to sinks  of the
+   vertices,  and   formula  constructions  in  CNFgen   will  respect
+   this order.
+
+** KTH predecessors list format — =simple=
+
+   Ideally if a vertex $v$ has $u$  in its adjacency list then the $v$
+   should be explicitly listed in the adjacency list of $v$. CNFgen is
+   liberal and do not expect that  and edge $\{u,v\}$ considered to be
+   in graph when either  $u$ is in the list of $v$, or  when $v$ is in
+   the list of $u$, or both.
+
+   Here’s an  example of how  a graph  with missing inverted  edges is
+   interpreted as an undirected graph. The file
   
    : c
    : c This is a DAG of 5 vertices
@@ -128,7 +129,7 @@
    : 4  : 2  3  0  
    : 5  : 2  4  0
     
-   which represents the directed acyclic graph
+   represents the directed acyclic graph
 
 #+BEGIN_SRC dot :file images/adjformatDAG.png :exports results
 digraph {
@@ -223,14 +224,14 @@ graph {
    the file. At the beginning  the coloring is completely unspecified,
    and  colors are  assigned to  some vertices  every time  the parser
    process the adjacency list  of a vertex. When the
-   parser finds a list
+   parser finds an adjacency list
 
    : i : <j1> <j2> <j3> ... <jk> 0
 
    it attempts  to color as  =L : R  R R ...  R=. If this is
    compatible with the coloring computed so  far, it moves to the next
    list.  Otherwise it  attempts  the coloring  =R  : L  L  L ...  L=.
-   If neither of this attempts work, then the parser raise and error. 
+   If neither of this attempts work, then the parser emits an error. 
 
    Essentially  an error  occurs when  a vertex  $v$ has  been already
    assigned by to one color because  of previous lines, and a new line
@@ -248,7 +249,7 @@ graph {
    + isolated  vertices are  colored either  =L= or  =R= if  the file
      specifies it adjacency list or not, respectively.
    + the order  of the vertices is important. The  first time a vertex
-     occur the parser attempts to color it =L=, if possible. 
+     occur the parser attempts first to color it =L= and then =R=.
 
 * Matrix format<<matrix>>
 
