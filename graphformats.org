@@ -42,7 +42,7 @@
   following file formats.
 
   + GML format ([[http://www.infosun.fim.uni-passau.de/Graphlet/GML/gml-tr.html][specification]])
-  + DOT format if ``NetworkX`` supports it ([[http://www.graphviz.org/content/dot-language][specification]])
+  + DOT format if =NetworkX= library supports it ([[http://www.graphviz.org/content/dot-language][specification]])
   + DIMACS edge format ([[http://prolland.free.fr/works/research/dsat/dimacs.html][specification]])
   + KTH adjacency list format ([[kthformat][specification]])
   + Matrix format ([[matrix][specification]])
@@ -110,11 +110,14 @@
 
 ** KTH predecessors list format — =simple=
 
-   Ideally if a vertex $v$ has $u$  in its adjacency list then the $v$
-   should be explicitly listed in the adjacency list of $v$. CNFgen is
-   liberal and do not expect that  and edge $\{u,v\}$ considered to be
+   If a vertex $v$ has $u$ in  its adjacency list then the $v$ must be
+   explicitly listed in the adjacency  list of $u$, otherwise the file
+   is considered not well defined.  Nevertheless CNFgen is liberal and
+   does not expect that. For CNFgen an edge $\{u,v\}$ considered to be
    in graph when either  $u$ is in the list of $v$, or  when $v$ is in
-   the list of $u$, or both.
+   the list of  $u$, or both. Naturally all  =simple= graphs generated
+   by CNFgen  are correct =kthlist=  files according to  the strictest
+   interpretation of the format.
 
    Here’s an  example of how  a graph  with missing inverted  edges is
    interpreted as an undirected graph. The file
@@ -159,14 +162,14 @@ graph {
 #+RESULTS:
 [[file:images/adjformatS.png]]
 
-** KTH predecessors list format — bipartite graphs
+** KTH predecessors list format — =bipartite=
 
    The interpretation  of a file  as a bipartite graph  is essentially
-   the same  as it is for  simple graph, with the  difference that the
-   bipartition  is computed  in  a greedy  fashion  while reading  the
-   graph. Let's first see two very explicative examples of the format
+   the same as  it is for undirected graphs, with  the difference that
+   the  bipartition is  made explicit  by listing  just the  adjacency
+   lists of the vertices on the left side.
 
-   : c listing only left side vertices
+   : c listing only left side vertices (bipartite graph)
    : 11
    : 1 : 7  8  9 0
    : 2 : 6  7  9 0
@@ -174,12 +177,14 @@ graph {
    : 4 : 8 10 11 0
    : 5 : 6 10 11 0
 
-   As the example  shows, it is not necessary to  list the edges going
-   toward  the  right  side  vertices,  because  they  are  implicitly
-   represented  already.  Alternatively it  is  also  possible to  use
-   the following representation.
+   The  difference  with  the  undirected graph  is  specification  is
+   important. Notice  that according to  the format spec  the previous
+   example is  not a  correct =kthlist= file  for an  undirected graph
+   because it  lacks the  adjacency lists of  the right  side vertices
+   too.  The  following   is  the  same  graph,  but   encoded  as  an
+   undirected graph.
 
-   : c listing left and right side vertices
+   : c listing left and right side vertices (undirected graph)
    : 11
    : 1 : 7  8  9 0
    : 2 : 6  7  9 0
@@ -217,14 +222,26 @@ graph {
 
 #+RESULTS:
 [[file:images/kthformatBI.png]]
+
+** Using =simple= files where =bipartite= files are expected (deprecated)
+
+   CNFgen parser  is forgiving in  the sense that  when an edge  in an
+   undirected  graph is  specified only  in one  of the  two adjacency
+   lists, CNFgen still accept the input (which formally is not a legal
+   =kthlist= files). This means that  any =kthlist= file for bipartite
+   graphs could be interpreted as a file for undirected graphs as well.
    
-   The  examples should  be  clear  enough. The  precise  rule of  the
-   bipartite graph interpretation is  as follows. Vertices are colored
-   with either left (=L=) or right  (=R=) colors during the parsing of
-   the file. At the beginning  the coloring is completely unspecified,
-   and  colors are  assigned to  some vertices  every time  the parser
-   process the adjacency list  of a vertex. When the
-   parser finds an adjacency list
+   It makes sense  to allow the same in the  opposite direction, then.
+   Unfortunately this requires  to fix some ambiguity.  We stress that
+   using  =kthfile=  undirected graphs  when  a  =bipartite= graph  is
+   expected could lead to some surprises and therefore it is deprecated.
+
+   The precise  rule of  how a  =simple= graph  can be  interpreted as
+   a =bipartite= graph is as follows. Vertices are colored with either
+   left (=L=)  or right (=R=) colors  during the parsing of  the file.
+   At the beginning the coloring is completely unspecified, and colors
+   are assigned  to some  vertices every time  the parser  process the
+   adjacency list of a vertex. When the parser finds an adjacency list
 
    : i : <j1> <j2> <j3> ... <jk> 0
 
@@ -241,15 +258,18 @@ graph {
    did not occur  in any adjacency list and its  own adjacency list is
    not specified) then it is assigned the color =R=.
    
-   *Remarks* the bi-coloring process is arbitrary and greedy, hence it
-   is possible  that the parsing fails  even if the graph  is actually
-   bipartite. Furthermore the same graph may get different bipartition
-   depending on its file representation.
+   *Remarks* this  bi-coloring process is arbitrary  and greedy, hence
+   it  is possible  that  the  parsing fails  even  if  the graph  was
+   actually  bipartite   but  the  bipartition  was   not  discovered.
+   Furthermore the same graph  may get different bipartition depending
+   on how it is represented as a =kthlist= file. Notice that:
 
-   + isolated  vertices are  colored either  =L= or  =R= if  the file
-     specifies it adjacency list or not, respectively.
+   + isolated vertices may be colored  either =L= or =R=, depending on
+     whether    the   file    specifies   it    adjacency   list    or
+     not, respectively.
    + the order  of the vertices is important. The  first time a vertex
      occur the parser attempts first to color it =L= and then =R=.
+  
 
 * Matrix format<<matrix>>
 

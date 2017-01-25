@@ -4,7 +4,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
 <title></title>
-<!-- 2016-11-24 Gio 01:01 -->
+<!-- 2017-01-25 Mer 14:17 -->
 <meta  http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta  name="generator" content="Org-mode" />
 <meta  name="author" content="Massimo Lauria" />
@@ -135,7 +135,7 @@ following file formats.
 <ul class="org-ul">
 <li>GML format (<a href="http://www.infosun.fim.uni-passau.de/Graphlet/GML/gml-tr.html">specification</a>)
 </li>
-<li>DOT format if ``NetworkX`` supports it (<a href="http://www.graphviz.org/content/dot-language">specification</a>)
+<li>DOT format if <code>NetworkX</code> library supports it (<a href="http://www.graphviz.org/content/dot-language">specification</a>)
 </li>
 <li>DIMACS edge format (<a href="http://prolland.free.fr/works/research/dsat/dimacs.html">specification</a>)
 </li>
@@ -300,11 +300,14 @@ this order.
 <h4 id="sec-1-3">KTH predecessors list format — <code>simple</code></h4>
 <div class="outline-text-4" id="text-1-3">
 <p>
-Ideally if a vertex \(v\) has \(u\)  in its adjacency list then the \(v\)
-should be explicitly listed in the adjacency list of \(v\). CNFgen is
-liberal and do not expect that  and edge \(\{u,v\}\) considered to be
+If a vertex \(v\) has \(u\) in  its adjacency list then the \(v\) must be
+explicitly listed in the adjacency  list of \(u\), otherwise the file
+is considered not well defined.  Nevertheless CNFgen is liberal and
+does not expect that. For CNFgen an edge \(\{u,v\}\) considered to be
 in graph when either  \(u\) is in the list of \(v\), or  when \(v\) is in
-the list of \(u\), or both.
+the list of  \(u\), or both. Naturally all  <code>simple</code> graphs generated
+by CNFgen  are correct <code>kthlist</code>  files according to  the strictest
+interpretation of the format.
 </p>
 
 <p>
@@ -347,17 +350,17 @@ and the simple undirected graph
 </div>
 
 <div id="outline-container-sec-1-4" class="outline-4">
-<h4 id="sec-1-4">KTH predecessors list format — bipartite graphs</h4>
+<h4 id="sec-1-4">KTH predecessors list format — <code>bipartite</code></h4>
 <div class="outline-text-4" id="text-1-4">
 <p>
 The interpretation  of a file  as a bipartite graph  is essentially
-the same  as it is for  simple graph, with the  difference that the
-bipartition  is computed  in  a greedy  fashion  while reading  the
-graph. Let's first see two very explicative examples of the format
+the same as  it is for undirected graphs, with  the difference that
+the  bipartition is  made explicit  by listing  just the  adjacency
+lists of the vertices on the left side.
 </p>
 
 <pre class="example">
-c listing only left side vertices
+c listing only left side vertices (bipartite graph)
 11
 1 : 7  8  9 0
 2 : 6  7  9 0
@@ -367,14 +370,16 @@ c listing only left side vertices
 </pre>
 
 <p>
-As the example  shows, it is not necessary to  list the edges going
-toward  the  right  side  vertices,  because  they  are  implicitly
-represented  already.  Alternatively it  is  also  possible to  use
-the following representation.
+The  difference  with  the  undirected graph  is  specification  is
+important. Notice  that according to  the format spec  the previous
+example is  not a  correct <code>kthlist</code> file  for an  undirected graph
+because it  lacks the  adjacency lists of  the right  side vertices
+too.  The  following   is  the  same  graph,  but   encoded  as  an
+undirected graph.
 </p>
 
 <pre class="example">
-c listing left and right side vertices
+c listing left and right side vertices (undirected graph)
 11
 1 : 7  8  9 0
 2 : 6  7  9 0
@@ -395,15 +400,34 @@ c listing left and right side vertices
 <p><img src="images/kthformatBI.png" alt="kthformatBI.png" />
 </p>
 </div>
+</div>
+</div>
+
+<div id="outline-container-sec-1-5" class="outline-4">
+<h4 id="sec-1-5">Using <code>simple</code> files where <code>bipartite</code> files are expected (deprecated)</h4>
+<div class="outline-text-4" id="text-1-5">
+<p>
+CNFgen parser  is forgiving in  the sense that  when an edge  in an
+undirected  graph is  specified only  in one  of the  two adjacency
+lists, CNFgen still accept the input (which formally is not a legal
+<code>kthlist</code> files). This means that  any <code>kthlist</code> file for bipartite
+graphs could be interpreted as a file for undirected graphs as well.
+</p>
 
 <p>
-The  examples should  be  clear  enough. The  precise  rule of  the
-bipartite graph interpretation is  as follows. Vertices are colored
-with either left (<code>L</code>) or right  (<code>R</code>) colors during the parsing of
-the file. At the beginning  the coloring is completely unspecified,
-and  colors are  assigned to  some vertices  every time  the parser
-process the adjacency list  of a vertex. When the
-parser finds an adjacency list
+It makes sense  to allow the same in the  opposite direction, then.
+Unfortunately this requires  to fix some ambiguity.  We stress that
+using  <code>kthfile</code>  undirected graphs  when  a  <code>bipartite</code> graph  is
+expected could lead to some surprises and therefore it is deprecated.
+</p>
+
+<p>
+The precise  rule of  how a  <code>simple</code> graph  can be  interpreted as
+a <code>bipartite</code> graph is as follows. Vertices are colored with either
+left (<code>L</code>)  or right (<code>R</code>) colors  during the parsing of  the file.
+At the beginning the coloring is completely unspecified, and colors
+are assigned  to some  vertices every time  the parser  process the
+adjacency list of a vertex. When the parser finds an adjacency list
 </p>
 
 <pre class="example">
@@ -430,15 +454,17 @@ not specified) then it is assigned the color <code>R</code>.
 </p>
 
 <p>
-<b>Remarks</b> the bi-coloring process is arbitrary and greedy, hence it
-is possible  that the parsing fails  even if the graph  is actually
-bipartite. Furthermore the same graph may get different bipartition
-depending on its file representation.
+<b>Remarks</b> this  bi-coloring process is arbitrary  and greedy, hence
+it  is possible  that  the  parsing fails  even  if  the graph  was
+actually  bipartite   but  the  bipartition  was   not  discovered.
+Furthermore the same graph  may get different bipartition depending
+on how it is represented as a <code>kthlist</code> file. Notice that:
 </p>
 
 <ul class="org-ul">
-<li>isolated  vertices are  colored either  <code>L</code> or  <code>R</code> if  the file
-specifies it adjacency list or not, respectively.
+<li>isolated vertices may be colored  either <code>L</code> or <code>R</code>, depending on
+whether    the   file    specifies   it    adjacency   list    or
+not, respectively.
 </li>
 <li>the order  of the vertices is important. The  first time a vertex
 occur the parser attempts first to color it <code>L</code> and then <code>R</code>.
@@ -447,6 +473,7 @@ occur the parser attempts first to color it <code>L</code> and then <code>R</cod
 </div>
 </div>
 </div>
+
 
 <div id="outline-container-sec-2" class="outline-3">
 <h3 id="sec-2">Matrix format<a id="matrix" name="matrix"></a></h3>
