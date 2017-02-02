@@ -7,7 +7,7 @@
 #+EXPORT_EXCLUDE_TAGS: noexport
 #+HTML_HEAD_EXTRA: <meta charset='utf-8'>
 #+HTML_HEAD_EXTRA: <meta http-equiv="X-UA-Compatible" content="chrome=1">
-#+HTML_HEAD_EXTRA: <meta name="description" content="CNFgen : Cool benchmarks for your SAT solver!">
+#+HTML_HEAD_EXTRA: <meta name="description" content="CNFgen: Combinatorial benchmarks for SAT solvers">
 #+HTML_HEAD: <link rel="stylesheet" type="text/css" media="screen" href="stylesheets/stylesheet.css">
 #+HTML_HEAD: <style type="text/css"> .title  { height: 0; margin: 0;} </style>
 
